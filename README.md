@@ -4,9 +4,141 @@ the main purpose of this, is to explain and internalize these weird solutions th
 
 ![bertosinferno-img](./img/bertosinferno.jpg)
 
-# What is my current approach?
+# What's my current approach?
 
 i'm randomly working through problems from [sean prashad list](https://seanprashad.com/leetcode-patterns/) and i'm also considering integrating anki for spaced repetition (i'm doing it 'by hand' rn)
+
+## 46. Permutations | 77. Combinations | 78. Subsets
+
+### idea
+
+these 3 problems are quite similar, the purpose is to arrange the given numbers based on some constraints
+
+tipically when we want to arrange something, we use *backtracking* because recursion provides us an handy way to handle arrangements
+
+### Permutations
+
+**constraints**
+- literally every elements but in different order
+
+~~~py
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        permutations = []
+        checked = [False] * 21
+
+        def dfs(i):
+            if i == len(nums):
+                res.append(permutations[:])
+                return
+            
+            for j in range(len(nums)):
+                if checked[j]:
+                    continue
+                
+                checked[j] = True
+                permutations.append(nums[j])
+                
+                dfs(i + 1)
+
+                checked[j] = False
+                permutations.pop()
+
+        dfs(0)
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N! * N^2) 
+~~~
+n! = order of permutations & n*n = n elements insertion into permutations array for each iterations
+
+~~~
+space = O(N! * N) 
+~~~
+if we are not counting the res array, because each permutation is of size n! and we building permutations iteratively so n
+
+
+### Combinations
+
+**constraints**
+- each combination of numbers n must be of size k 
+- no repetitions
+
+~~~py
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        res = []
+        combinations = []
+
+        def dfs(i):
+            if i > n + 1:
+                return
+
+            if len(combinations) == k:
+                res.append(combinations[:])
+                return
+
+            for j in range(i, n + 1):
+                combinations.append(j)
+                dfs(j + 1)
+                combinations.pop()
+
+        dfs(1)
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N choose K * K) 
+~~~
+the dfs generates all combinations of k elements from a set of n elements (binomial coefficient)
+for each combination, there is an appending operation of k-elements to res array
+
+~~~
+space = O(N choose K) 
+~~~
+n choose k = order of combinations
+
+
+### Subsets
+
+**constraints**
+- can contain empty array
+- order is important
+
+~~~py
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        res = [] 
+        subset = []
+
+        def dfs(i):
+            if i == len(nums):
+                res.append(subset[:])
+                return
+
+            subset.append(nums[i])
+            dfs(i + 1)
+            subset.pop()
+            dfs(i + 1)
+    
+        dfs(0)
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N * 2^N) 
+~~~
+n = how many subsets do we need & 2^n = subset order
+
+~~~
+space = O(2^N) 
+~~~
+2^N = order of subsets
 
 ## 238. Product of Array Except Self
 
@@ -85,7 +217,6 @@ like before
 ~~~
 space = O(1) 
 ~~~
-
 since there are no auxiliary arrays except the result array
 
 ### resources
