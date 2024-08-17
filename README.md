@@ -4,6 +4,10 @@ the main purpose of this, is to explain and internalize these weird solutions th
 
 ![bertosinferno-img](./img/bertosinferno.jpg)
 
+# What is my current approach?
+
+i'm randomly working through problems from [sean prashad list](https://seanprashad.com/leetcode-patterns/) and i'm also considering integrating anki for spaced repetition (i'm doing it 'by hand' rn)
+
 ## 238. Product of Array Except Self
 
 ### idea
