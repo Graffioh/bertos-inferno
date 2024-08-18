@@ -8,6 +8,12 @@ the main purpose of this, is to explain and internalize these weird solutions th
 
 i'm randomly working through problems from [sean prashad list](https://seanprashad.com/leetcode-patterns/) and i'm also considering integrating anki for spaced repetition (i'm doing it 'by hand' rn)
 
+# index
+1. [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
+2. [238. Product of Array Except Self](#238-product-of-array-except-self)
+3. [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
+4. [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
+
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
 ### key idea
@@ -224,7 +230,7 @@ since there are no auxiliary arrays except the result array
 
 [prefix sum video by errichto](https://www.youtube.com/watch?v=bNvIQI2wAjk)
 
-## 314. Binary Tree Vertical Order Traversal [(premium)](https://leetcode.com/problems/binary-tree-vertical-order-traversal/description) | ['premium'](https://www.lintcode.com/problem/651/)
+## 314. Binary Tree Vertical Order Traversal [(premium)](https://leetcode.com/problems/binary-tree-vertical-order-traversal/description) | [('premium')](https://www.lintcode.com/problem/651/)
 
 ### key idea
 each node has a column associated to it and based on the columns the node values must be put in an hashmap structured this way column (key) : node (value)
