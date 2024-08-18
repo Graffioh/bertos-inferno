@@ -20,6 +20,7 @@ following company specific problems based on frequency
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
+- [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
@@ -424,7 +425,7 @@ space = O(N)
 ~~~
 the call stack is based on the height of the tree and in the worst case it could be O(N)
 
-## [680. Valid Palindrome II]()
+## [680. Valid Palindrome II](https://leetcode.com/problems/valid-palindrome-ii)
 
 ### key idea
 *two pointers*
