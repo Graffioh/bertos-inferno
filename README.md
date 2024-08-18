@@ -6,7 +6,13 @@ the main purpose of this, is to explain and internalize these weird solutions th
 
 # What's my current approach?
 
-i'm randomly working through problems from [sean prashad list](https://seanprashad.com/leetcode-patterns/) and i'm also considering integrating anki for spaced repetition (i'm doing it 'by hand' rn)
+anki deck for spaced repetition and
+
+- **leetcode free:**
+randomly working through problems from [sean prashad list](https://seanprashad.com/leetcode-patterns/)
+
+- **leetcode premium:**
+following company specific problems based on frequency
 
 # index
 1. [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
