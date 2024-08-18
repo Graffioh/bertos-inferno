@@ -8,9 +8,9 @@ the main purpose of this, is to explain and internalize these weird solutions th
 
 i'm randomly working through problems from [sean prashad list](https://seanprashad.com/leetcode-patterns/) and i'm also considering integrating anki for spaced repetition (i'm doing it 'by hand' rn)
 
-## 46. Permutations | 77. Combinations | 78. Subsets
+## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
-### idea
+### key idea
 
 these 3 problems are quite similar, the purpose is to arrange the given numbers based on some constraints
 
@@ -140,9 +140,10 @@ space = O(2^N)
 ~~~
 2^N = order of subsets
 
-## 238. Product of Array Except Self
 
-### idea
+## [238. Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/description/)
+
+### key idea
 - compute the prefix product (the product of all the elements preceding the current element)
 - computer the suffix product (the product of all the elements following the current element)
 - the product of these two arrays results in an array where each element is the product of all elements except itself
@@ -219,9 +220,136 @@ space = O(1)
 ~~~
 since there are no auxiliary arrays except the result array
 
-### resources
+### useful resources
 
 [prefix sum video by errichto](https://www.youtube.com/watch?v=bNvIQI2wAjk)
 
-[solution video by neetcode](https://www.youtube.com/watch?v=bNvIQI2wAjk)
+## 314. Binary Tree Vertical Order Traversal [(premium)](https://leetcode.com/problems/binary-tree-vertical-order-traversal/description) | ['premium'](https://www.lintcode.com/problem/651/)
 
+### key idea
+each node has a column associated to it and based on the columns the node values must be put in an hashmap structured this way column (key) : node (value)
+
+there is a simple calculation to do with columns
+
+- go left -> column - 1
+- go right -> column + 1
+
+the hashmap must be populated using **bfs** and then sorted otherwise with dfs you wont have the correct order
+
+~~~py
+class Solution:
+    def verticalOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root:
+            return []
+
+        res = []
+        hmap = defaultdict(list)
+        queue = deque([(0, root)])
+
+        while queue:
+            col, node = queue.popleft()
+
+            hmap[col].append(node.val)
+
+            if node.left:
+                queue.append((col - 1, node.left))
+            if node.right:
+                queue.append((col + 1, node.right))
+        
+        sortHmap = dict(sorted(hmap.items()))
+
+        for item in sortHmap.values():
+            res.append(item)
+
+        return res
+~~~
+
+**optimization**
+
+this little optimization eliminates the need to sort the hashmap, basically by defining a range of columns from *min_col* to *max_col*
+
+~~~py
+class Solution:
+    def verticalOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root:
+            return []
+
+        res = []
+        hmap = defaultdict(list)
+        queue = deque([(0, root)])
+        
+        min_col = float(inf)
+        max_col = float(-inf)
+
+        while queue:
+            col, node = queue.popleft()
+
+            hmap[col].append(node.val)
+
+            min_col = min(min_col, col)
+            max_col = max(max_col, col)
+
+            if node.left:
+                queue.append((col - 1, node.left))
+            if node.right:
+                queue.append((col + 1, node.right))
+        
+        for col in range(min_col, max_col + 1):
+            res.append(hmap[col])
+
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+n = height of the tree in the worst case
+
+~~~
+space = O(N) 
+~~~
+because we are only storing values of the tree in the hashmap/result and there are n values
+
+
+## [543. Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree)
+
+### key idea
+the thing to remember for this problem that i always forget, is that the diameter could be:
+
+- diameter = current node left path + current node right path
+- diameter = curret node left OR right path + old left OR right path
+
+that's why we need a nonlocal variable, since the diameter for some cases cannot be calculated solely from the current node but requires information from previous dfs calls as well
+
+~~~py
+class Solution:
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        diameter = 0
+
+        def dfs(node) -> int:
+            if not node:
+                return 0
+            nonlocal diameter
+
+            leftPath = dfs(node.left)
+            rightPath = dfs(node.right) 
+
+            diameter = max(diameter, leftPath + rightPath)
+            
+            return max(leftPath, rightPath) + 1
+            
+        dfs(root)
+        return diameter
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through each node once with the dfs
+
+~~~
+space = O(N) 
+~~~
+the call stack is based on the height of the tree and in the worst case it could be O(N)
