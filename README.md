@@ -15,10 +15,12 @@ randomly working through problems from [sean prashad list](https://seanprashad.c
 following company specific problems based on frequency
 
 # index
-1. [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
-2. [238. Product of Array Except Self](#238-product-of-array-except-self)
-3. [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
-4. [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
+- [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
+- [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
+- [238. Product of Array Except Self](#238-product-of-array-except-self)
+- [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
+- [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
+- [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
@@ -152,6 +154,62 @@ space = O(2^N)
 ~~~
 2^N = order of subsets
 
+## [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description)
+
+### key idea
+minheap and whenever the minheap size reaches k, pop from minheap (so it will pop the smallest element each time)
+
+at the end in the first position we will have the smallest element of k-sized array, that is the k largest element
+
+the same applies to maxheap
+
+if you want it to be optimized more than the heap approach, a *quickselect* is needed
+
+**min heap:**
+~~~py
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        heap = []
+
+        for n in nums:
+            heapq.heappush(heap, n)
+
+            if len(heap) > k:
+                heapq.heappop(heap)
+
+        return heap[0]
+~~~
+
+**max heap:**
+~~~py
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        heap = [-num for num in nums]
+
+        heapq.heapify(heap)
+
+        for _ in range(k - 1):
+            heapq.heappop(heap)
+
+        return -heap[0]
+~~~
+
+**complexity**
+~~~
+time = O(N + K logn) 
+~~~
+n = to turn the array in a heap and
+
+k + logn = logn for each pop operation (to heapify) and k pop operations
+
+~~~
+space = O(N) 
+~~~
+for the heap size
+
+### optimization
+
+quickselect (TO DO)
 
 ## [238. Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/description/)
 
@@ -276,7 +334,7 @@ class Solution:
         return res
 ~~~
 
-**optimization**
+### optimization
 
 this little optimization eliminates the need to sort the hashmap, basically by defining a range of columns from *min_col* to *max_col*
 
@@ -365,3 +423,101 @@ we go through each node once with the dfs
 space = O(N) 
 ~~~
 the call stack is based on the height of the tree and in the worst case it could be O(N)
+
+## [680. Valid Palindrome II]()
+
+### key idea
+*two pointers*
+
+whenever one of both sides is not equal, check if by removing one of the two sides it will become palindrome, by comparing the string without the left character and the string without the right character using its reverse (the code is self-explanatory with some python knowledge)
+
+**remember** to check both possibilites, so skip left, check, skip right, check
+
+~~~py
+class Solution:
+    def validPalindrome(self, s: str) -> bool:
+        l, r = 0, len(s) - 1
+
+        while l < r:
+            if s[l] != s[r]:
+                skipLeft, skipRight = s[l + 1:r + 1], s[l:r]
+
+                # palindrome check with reverse technique
+                # if both are false it means that even with deleting the character
+                #   the string is still not palindrome
+                return (skipLeft == skipLeft[::-1]) or (skipRight == skipRight[::-1])
+            
+            l += 1
+            r -= 1
+
+        return True
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through all the string
+
+~~~
+space = O(N) 
+~~~
+for skipLeft/skipRight
+
+## optimization
+
+we can optimize this problem by eliminating skipLeft/skipRight and reversing
+
+by using only pointers
+
+
+## [1249. Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses)
+
+### key idea
+keep a count of open parentheses and whenever we encounter a closing parentheses we decrement the count
+
+there is a little evil edgecase where there could be no closing parentheses but only open parentheses and that's why we have two iterations:
+
+1) iteration to remove extra closing parentheses
+2) iteration to remove extra open parentheses
+
+~~~py
+class Solution:
+    def minRemoveToMakeValid(self, s: str) -> str:
+        res = []
+        openCount = 0
+
+        # skip extra closing parentheses
+        for c in s:
+            if c == "(":
+                res.append(c)
+                openCount += 1
+            elif c == ")" and openCount > 0:
+                res.append(c)
+                openCount -= 1
+            elif c != ")":
+                res.append(c)
+        
+        filtered = []
+
+        # skip extra open parentheses
+        for c in res[::-1]:
+            if c == "(" and openCount > 0:
+                openCount -= 1
+            else:
+                filtered.append(c)
+        
+        return "".join(filtered[::-1])
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+two indipendent iterations that goes only through all the elements of the string
+
+~~~
+space = O(N) 
+~~~
+res/filtered size is at most n
+
