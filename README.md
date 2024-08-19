@@ -325,9 +325,9 @@ quickselect (TO DO)
 ## [236. Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description)
 
 ### key idea
-if the left OR right subtree returns null, then it means that both p and q are in the subtree that returned the node, and the node returned is the LCA
+if the left OR right subtree returns null, then it means that both p and q are in the subtree that didn't return null, and the node returned is the LCA
 
-otherwise if both return null, it means that the LCA is the parent of the left and right subtree
+otherwise if both subtree return null, it means that the LCA is the parent of the left and right subtree
 
 ~~~py
 class Solution:
@@ -579,7 +579,49 @@ the call stack is based on the height of the tree and in the worst case it could
 
 ## 637. Valid Word Abbreviation [(premium)](https://leetcode.com/problems/valid-word-abbreviation/description) | [('premium')](https://www.lintcode.com/problem/637/)
 
-BULLSHIT
+### key idea
+the idea is simple, two pointers, *word_ptr* and *abbr_ptr*
+
+whenever a number is encountered in the abbr, process the steps based on the number and increment the word_ptr by these steps
+
+but the execution is BULLSHIT, too many edge cases and not an easy question
+
+~~~py
+class Solution:
+    def validWordAbbreviation(self, word: str, abbr: str) -> bool:
+        word_ptr, abbr_ptr = 0, 0
+
+        while word_ptr < len(word) and abbr_ptr < len(abbr):
+            if abbr[abbr_ptr].isdigit():
+                if abbr[abbr_ptr] == "0":
+                    return False
+                
+                step = 0
+                while abbr_ptr < len(abbr) and abbr[abbr_ptr].isdigit():
+                    step = step * 10 + int(abbr[abbr_ptr])
+                    abbr_ptr += 1
+                
+                word_ptr += step
+            else:
+                if word[word_ptr] != abbr[abbr_ptr]:
+                    return False
+                
+                word_ptr += 1
+                abbr_ptr += 1
+            
+        return word_ptr == len(word) and abbr_ptr == len(abbr)
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+both word and abbr are of size n
+
+~~~
+space = O(1) 
+~~~
+we only use pointers
 
 ## [680. Valid Palindrome II](https://leetcode.com/problems/valid-palindrome-ii)
 
