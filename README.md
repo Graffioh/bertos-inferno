@@ -29,6 +29,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
+- [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii)
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
@@ -756,4 +757,53 @@ two indipendent iterations that goes only through all the elements of the string
 space = O(N) 
 ~~~
 res/filtered size is at most n
+
+## 1650. Lowest Common Ancestor of a Binary Tree III [(premium)](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii)
+
+### key idea
+not the traditional solution explained in the tutorials, but i like this one
+
+basically is SFS (Swim First Search)
+
+based on the distance from the top, if the two distances are different, then the one that is lower need to swim till the one higher, as soon as they are at the same height then they swim together until the LCA
+
+~~~py
+class Solution:
+    def lowestCommonAncestor(self, p: 'Node', q: 'Node') -> 'Node':
+        def distFromTop(node) -> int:
+            if not node:
+                return -1
+            return 1 + distFromTop(node.parent)
+        
+        pDistFromTop = distFromTop(p)
+        qDistFromTop = distFromTop(q)
+
+        while pDistFromTop > qDistFromTop:
+            p = p.parent
+            pDistFromTop -= 1
+        while qDistFromTop > pDistFromTop:
+            q = q.parent
+            qDistFromTop -= 1
+        
+        while p != q:
+            p = p.parent
+            q = q.parent
+        
+        return p
+~~~
+
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole tree in the worst case
+
+~~~
+space = O(1) 
+~~~
+no extra space used, only iterations (if we don't count the call stack to go to the top)
+
+
+
 
