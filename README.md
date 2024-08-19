@@ -24,7 +24,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
-- [637. Valid Word Abbreviation](#637-valid-word-abbreviation)
+- [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
@@ -525,7 +525,7 @@ space = O(N)
 ~~~
 the call stack is based on the height of the tree and in the worst case it could be O(N)
 
-## 637. Valid Word Abbreviation[(premium)](https://leetcode.com/problems/valid-word-abbreviation/description)[('premium')](https://www.lintcode.com/problem/637/)
+## 637. Valid Word Abbreviation [(premium)](https://leetcode.com/problems/valid-word-abbreviation/description)[('premium')](https://www.lintcode.com/problem/637/)
 
 BULLSHIT
 
