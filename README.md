@@ -18,7 +18,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 
 # Problems index
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
-- [50. Pow(x,n)](#50-pow(x,n))
+- [50. Pow(x,n)](#50-powxn)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
 - [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
