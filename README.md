@@ -18,6 +18,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 
 # Problems index
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
+- [50. Pow(x,n)](#50-pow(x,n))
 - [88. Merge Sorted Array](#88-merge-sorted-array)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
 - [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
@@ -212,6 +213,57 @@ space = O(1)
 ~~~
 we do the operations in place without extra memory
 
+## [50. Pow(x,n)](https://leetcode.com/problems/powx-n/description)
+
+### key idea
+the iterative approach of multiplying n times is not optimized
+
+so we need to find a way to compute half of the calculations
+
+the basic idea is to divide up exponents: 
+- 2^4 = 2^2 * 2^2 = 2^1 * 2^1 * 2^1 * 2^1
+- 2^5 = 2^1 * 2^4 = ...
+
+if it's even, then divide by 2, if it's odd we should 'remove' 1 and then divide by 2 the remaining part
+
+thanks to the halving, we can memoize the computations efficiently
+
+~~~py
+class Solution:
+    def myPow(self, x: float, n: int) -> float:
+        isExpNegative = n < 0
+        n = abs(n)
+        expDict = defaultdict(int)
+
+        def dfs(exp) -> float:
+            if exp == 0:
+                return 1
+            
+            if exp == 1:
+                return x
+            
+            if exp in expDict:
+                return expDict[exp]
+            
+            # (x if exp % 2 else 1) is for dividing up odd number 
+            #   so 2^5 become 2^1 * 2^4
+            expDict[exp] = dfs(exp // 2) * dfs(exp // 2) * (x if exp % 2 else 1)
+
+            return expDict[exp]
+        
+        return 1/dfs(n) if isExpNegative else dfs(n)
+~~~
+
+**complexity**
+~~~
+time = O(logN) 
+~~~
+we cut by 2 the computation eachtime
+
+~~~
+space = O(logN) 
+~~~
+the dictionary stores only 'intermediate' results thanks to the halving
 
 ## [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description)
 
@@ -525,7 +577,7 @@ space = O(N)
 ~~~
 the call stack is based on the height of the tree and in the worst case it could be O(N)
 
-## 637. Valid Word Abbreviation [(premium)](https://leetcode.com/problems/valid-word-abbreviation/description)[('premium')](https://www.lintcode.com/problem/637/)
+## 637. Valid Word Abbreviation [(premium)](https://leetcode.com/problems/valid-word-abbreviation/description) | [('premium')](https://www.lintcode.com/problem/637/)
 
 BULLSHIT
 
