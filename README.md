@@ -14,7 +14,9 @@ randomly working through problems from [sean prashad list](https://seanprashad.c
 - **leetcode premium:**
 following company specific problems based on frequency
 
-# index
+i try solving the question for 30 minutes, then look at the solution until i fully understand it
+
+# Problems index
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
@@ -609,7 +611,7 @@ in the worst case we'll visit all the tree (if low and high are at the edge of t
 ~~~
 space = O(N) 
 ~~~
-recursive call stack size since we in the worst case recurse n times (how many nodes there are)
+recursive call stack size since in the worst case we recurse n times (how many nodes there are)
 
 ## [1249. Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses)
 
