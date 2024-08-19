@@ -16,11 +16,15 @@ following company specific problems based on frequency
 
 # index
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
+- [88. Merge Sorted Array](#88-merge-sorted-array)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
+- [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
+- [637. Valid Word Abbreviation](#637-valid-word-abbreviation)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
+- [938. Range Sum of BST](#938-range-sum-of-bst)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
@@ -155,6 +159,58 @@ space = O(2^N)
 ~~~
 2^N = order of subsets
 
+
+## [88. Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array)
+
+## key idea
+use 3 pointers, that points:
+
+- at the last position of nums1 (last)
+- at the last element of nums1 (p1)
+- at the last element of nums2 (p2)
+
+now it consists of comparing p1 and p2, whoever is the largest, just put it in the last position and decrement the pointers accordingly
+
+there is one edge case where p1 becomes 0 but there are still p2 elements remaining in nums2, in that case pour all of them in nums1
+
+~~~py
+class Solution:
+    def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
+        """
+        Do not return anything, modify nums1 in-place instead.
+        """
+        last = m + n - 1
+        p1 = m - 1
+        p2 = n - 1
+
+        while p1 >= 0 and p2 >= 0:
+            if nums1[p1] < nums2[p2]:
+                nums1[last] = nums2[p2]
+                p2 -= 1
+            else:
+                nums1[last] = nums1[p1]
+                p1 -= 1
+            last -= 1
+        
+        # edge case: if there are remaining elements in nums2
+        while p2 >= 0:
+            nums1[last] = nums2[p2]
+            p2 -= 1
+            last -= 1
+~~~
+
+**complexity**
+~~~
+time = O(N + M) 
+~~~
+we go through both of the arrays once
+
+~~~
+space = O(1) 
+~~~
+we do the operations in place without extra memory
+
+
 ## [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description)
 
 ### key idea
@@ -211,6 +267,46 @@ for the heap size
 ### optimization
 
 quickselect (TO DO)
+
+## [236. Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description)
+
+### key idea
+if the left OR right subtree returns null, then it means that both p and q are in the subtree that returned the node, and the node returned is the LCA
+
+otherwise if both return null, it means that the LCA is the parent of the left and right subtree
+
+~~~py
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if not root:
+            return None
+        
+        if root == p or root == q:
+            return root
+        
+        l = self.lowestCommonAncestor(root.left, p, q) 
+        r = self.lowestCommonAncestor(root.right, p, q) 
+
+        if l and r:
+            return root
+        else:
+            return l or r
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+in the worst case it checks the whole tree till the leaf nodes
+
+~~~
+space = O(N) 
+~~~
+n elements in the tree, so the size of the recursive stack is n, otherwise O(1)
+
+### optimization
+
+if you want to optimize it further watch this [video by errichto](https://www.youtube.com/watch?v=dOAxrhAUIhA&list=PLl0KD3g-oDOEbtmoKT5UWZ-0_JbyLnHPZ&index=17)
 
 ## [238. Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/description/)
 
@@ -386,7 +482,9 @@ because we are only storing values of the tree in the hashmap/result and there a
 ## [543. Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree)
 
 ### key idea
-the thing to remember for this problem that i always forget, is that the diameter could be:
+the thing to remember for this problem that i always forget is that you need to add 1 at the end (to count edges) and not for every dfs call (to count nodes)
+
+plus the diameter could be:
 
 - diameter = current node left path + current node right path
 - diameter = curret node left OR right path + old left OR right path
@@ -424,6 +522,10 @@ we go through each node once with the dfs
 space = O(N) 
 ~~~
 the call stack is based on the height of the tree and in the worst case it could be O(N)
+
+## 637. Valid Word Abbreviation[(premium)](https://leetcode.com/problems/valid-word-abbreviation/description)[('premium')](https://www.lintcode.com/problem/637/)
+
+BULLSHIT
 
 ## [680. Valid Palindrome II](https://leetcode.com/problems/valid-palindrome-ii)
 
@@ -471,6 +573,43 @@ we can optimize this problem by eliminating skipLeft/skipRight and reversing
 
 by using only pointers
 
+## [938. Range Sum of BST](https://leetcode.com/problems/range-sum-of-bst)
+
+### key idea
+whenever you are out of range, return accordingly
+
+the return is used to go right or left without computing the sum at the end, so it's a sort of roadblock
+
+we compute the sum only if we are inside the range
+
+~~~py
+class Solution:
+    def rangeSumBST(self, root: Optional[TreeNode], low: int, high: int) -> int:
+        def dfs(node) -> int:
+            if not node:
+                return 0
+            
+            if node.val < low:
+                return dfs(node.right)
+                
+            if node.val > high:
+                return dfs(node.left)
+
+            return node.val + dfs(node.left) + dfs(node.right)
+        
+        return dfs(root)
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+in the worst case we'll visit all the tree (if low and high are at the edge of the tree)
+
+~~~
+space = O(N) 
+~~~
+recursive call stack size since we in the worst case recurse n times (how many nodes there are)
 
 ## [1249. Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses)
 
@@ -480,7 +619,7 @@ keep a count of open parentheses and whenever we encounter a closing parentheses
 there is a little evil edgecase where there could be no closing parentheses but only open parentheses and that's why we have two iterations:
 
 1) iteration to remove extra closing parentheses
-2) iteration to remove extra open parentheses
+2) iteration to remove the most right extra open parentheses (that's why we iterate the reversed array)
 
 ~~~py
 class Solution:
@@ -501,7 +640,7 @@ class Solution:
         
         filtered = []
 
-        # skip extra open parentheses
+        # skip extra most right open parentheses
         for c in res[::-1]:
             if c == "(" and openCount > 0:
                 openCount -= 1
