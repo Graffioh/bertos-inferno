@@ -19,17 +19,22 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 # Problems index
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [50. Pow(x,n)](#50-powxn)
+- [56. Merge Intervals](#56-merge-intervals)
+- [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
+- [227. Basic Calculator II](#227-basic-calculator-ii)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
 - [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
+- [339. Nested List Weight Sum](#339-nested-list-weight-sum-premium)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
-- [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii)
+- [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
+- [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
@@ -163,57 +168,6 @@ space = O(2^N)
 ~~~
 2^N = order of subsets
 
-
-## [88. Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array)
-
-## key idea
-use 3 pointers, that points:
-
-- at the last position of nums1 (last)
-- at the last element of nums1 (p1)
-- at the last element of nums2 (p2)
-
-now it consists of comparing p1 and p2, whoever is the largest, just put it in the last position and decrement the pointers accordingly
-
-there is one edge case where p1 becomes 0 but there are still p2 elements remaining in nums2, in that case pour all of them in nums1
-
-~~~py
-class Solution:
-    def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
-        """
-        Do not return anything, modify nums1 in-place instead.
-        """
-        last = m + n - 1
-        p1 = m - 1
-        p2 = n - 1
-
-        while p1 >= 0 and p2 >= 0:
-            if nums1[p1] < nums2[p2]:
-                nums1[last] = nums2[p2]
-                p2 -= 1
-            else:
-                nums1[last] = nums1[p1]
-                p1 -= 1
-            last -= 1
-        
-        # edge case: if there are remaining elements in nums2
-        while p2 >= 0:
-            nums1[last] = nums2[p2]
-            p2 -= 1
-            last -= 1
-~~~
-
-**complexity**
-~~~
-time = O(N + M) 
-~~~
-we go through both of the arrays once
-
-~~~
-space = O(1) 
-~~~
-we do the operations in place without extra memory
-
 ## [50. Pow(x,n)](https://leetcode.com/problems/powx-n/description)
 
 ### key idea
@@ -265,6 +219,95 @@ we cut by 2 the computation eachtime
 space = O(logN) 
 ~~~
 the dictionary stores only 'intermediate' results thanks to the halving
+
+## [56. Merge Intervals](https://leetcode.com/problems/merge-intervals)
+
+## key idea
+first sort the intervals by the first value and put the first interval inside res
+
+res is gonna manage the merged intervals (and it's gonna be the final result obv)
+
+when to merge an interval? if the previous interval END is grater or equal than the current interval START, really simple
+
+~~~py
+class Solution:
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        if len(intervals) == 1:
+            return intervals
+        
+        intervals.sort()
+
+        res = [intervals[0]]
+
+        for start, end in intervals:
+            if res[-1][1] >= start:
+                res[-1][1] = max(res[-1][1], end)
+            else:
+                res.append([start, end])
+            
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we iterate through all the intervals
+
+~~~
+space = O(N) 
+~~~
+in the worst case all the intervals are disjoint (no overlap) so |res| = |intervals|
+
+## [88. Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array)
+
+## key idea
+use 3 pointers, that points:
+
+- at the last position of nums1 (last)
+- at the last element of nums1 (p1)
+- at the last element of nums2 (p2)
+
+now it consists of comparing p1 and p2, whoever is the largest, just put it in the last position and decrement the pointers accordingly
+
+there is one edge case where p1 becomes 0 but there are still p2 elements remaining in nums2, in that case pour all of them in nums1
+
+~~~py
+class Solution:
+    def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
+        """
+        Do not return anything, modify nums1 in-place instead.
+        """
+        last = m + n - 1
+        p1 = m - 1
+        p2 = n - 1
+
+        while p1 >= 0 and p2 >= 0:
+            if nums1[p1] < nums2[p2]:
+                nums1[last] = nums2[p2]
+                p2 -= 1
+            else:
+                nums1[last] = nums1[p1]
+                p1 -= 1
+            last -= 1
+        
+        # edge case: if there are remaining elements in nums2
+        while p2 >= 0:
+            nums1[last] = nums2[p2]
+            p2 -= 1
+            last -= 1
+~~~
+
+**complexity**
+~~~
+time = O(N + M) 
+~~~
+we go through both of the arrays once
+
+~~~
+space = O(1) 
+~~~
+we do the operations in place without extra memory
 
 ## [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description)
 
@@ -322,6 +365,113 @@ for the heap size
 ### optimization
 
 quickselect (TO DO)
+
+## [71. Simplify Path](https://leetcode.com/problems/simplify-path)
+
+### key idea
+the only relevant special character for this problem is ".."
+
+use a stack for storing words, whenever ".." is encountered if there are words in the stack, pop
+
+for "" and "." just continue the iteration cause we just skip them
+
+at the end we join all the words from the stack by separating them with "/"
+
+~~~py
+class Solution:
+    def simplifyPath(self, path: str) -> str:
+        words_stk = []
+        items = path.split("/")
+
+        for item in items:
+            if item == "" or item == ".":
+                continue
+            
+            if item == "..":
+                if words_stk:
+                    words_stk.pop()
+            else:
+                words_stk.append(item)
+        
+        return "/" + "/".join(words_stk)
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through all the path of size n
+
+~~~
+space = O(N) 
+~~~
+we store words from the path in the stack
+
+## [227. Basic Calculator II](https://leetcode.com/problems/basic-calculator-ii/description)
+
+### key idea
+not using a stack due to extra space complexity
+
+doing the operation iteratively, from left to right by keeping track of the previous and current number
+
+as soon as we encounter * or /, we need to undo the previous + or - operation since the order of operations is / -> * -> +/-
+
+remember to parse the numbers > 10 by doing the usual while loop
+
+~~~py
+class Solution:
+    def calculate(self, s: str) -> int:
+        cur = prev = res = 0
+        op = "+"
+
+        i = 0
+        while i < len(s):
+            char = s[i]
+            if char.isdigit():
+                # parsing numbers
+                while i < len(s) and s[i].isdigit(): 
+                    cur = cur * 10 + int(s[i])
+                    i += 1
+                i -= 1
+
+                if op == "+":
+                    res += cur
+                    prev = cur
+                elif op == "-":
+                    res -= cur
+                    prev = -cur
+                elif op == "*":
+                    res -= prev
+
+                    res += prev * cur
+                    prev = cur * prev
+                elif op == "/":
+                    res -= prev
+
+                    # python has problems with negative numbers
+                    #   so // will not work correctly
+                    res += int(prev/cur)
+                    prev = int(prev/cur)
+
+                cur = 0
+            elif char != " ":
+                op = char
+
+            i += 1
+            
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole string
+
+~~~
+space = O(1) 
+~~~
+no extra space, we happy
 
 ## [236. Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description)
 
@@ -532,6 +682,77 @@ n = height of the tree in the worst case
 space = O(N) 
 ~~~
 because we are only storing values of the tree in the hashmap/result and there are n values
+
+## 339. Nested List Weight Sum [(premium)](https://leetcode.com/problems/nested-list-weight-sum/description)
+
+### key idea
+the difficulty of this problem is due to the interface implementation, because the algorithm is really straightforward
+
+here it's the simple dfs solution
+
+~~~py
+class Solution:
+    def depthSum(self, nestedList: List[NestedInteger]) -> int:
+        def dfs(nested_list, depth) -> int:
+            total = 0
+
+            for nested in nested_list:
+                if nested.isInteger():
+                    total += nested.getInteger() * depth
+                else:
+                    total += dfs(nested.getList(), depth + 1)
+            return total
+            
+        return dfs(nestedList, 1)
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole list
+
+~~~
+space = O(N) 
+~~~
+recursive call stack worst case '[[[[[[]]]]]]'
+
+### alternative (iterative) RECOMMENDED
+
+if the interviewer alter the question by changing the constraint of the depth, a stack overflow might occur with the recursive approach (dfs), so its good to have in mind the iterative solution (bfs) as well
+
+the key idea here is to spread out the list at the end of the queue each time one is encountered, so after every iteration we can go one level deeper
+
+~~~py
+class Solution:
+    def depthSum(self, nestedList: List[NestedInteger]) -> int:
+        queue = deque(nestedList)
+        depth = 1
+        res = 0
+
+        while queue:
+            for _ in range(len(queue)):
+                item = queue.popleft()
+                if item.isInteger():
+                    res += item.getInteger() * depth
+                else:
+                    queue.extend(item.getList())
+            
+            depth += 1
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+same as dfs
+
+~~~
+space = O(N) 
+~~~
+same as dfs
 
 
 ## [543. Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree)
@@ -804,6 +1025,71 @@ space = O(1)
 ~~~
 no extra space used, only iterations (if we don't count the call stack to go to the top)
 
+## 1762. Buildings With an Ocean View [(premium)](https://leetcode.com/problems/buildings-with-an-ocean-view/description)
 
+### key idea
+(personal solution)
 
+easy but marked medium, just watch for the tallest building with a ptr, skip every smaller building and just insert in the result array the indexes of the higher buildings. the code is self explanatory
 
+we use a deque to save time by appending at the left instead of reversing the array at the end
+
+~~~py
+class Solution:
+    def findBuildings(self, heights: List[int]) -> List[int]:
+        if not heights:
+            return []
+
+        answer = deque([])
+        max_height = -1
+
+        for i in range(len(heights) - 1, -1, -1):
+            cur = heights[i]
+
+            if cur > max_height:
+                answer.appendleft(i)
+
+                max_height = cur
+
+        return answer
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through all the buildings in the worst case
+
+~~~
+space = O(N) 
+~~~
+we need to store n elements in res array in the worst case
+
+### alternative (from left to right)
+
+it might happen that the interviewer will change the constraint for example you are only allowed to go from left to right, then use this solution with a stack
+
+~~~py
+class Solution:
+    def findBuildings(self, heights: List[int]) -> List[int]:
+        n = len(heights)
+        answer = []
+
+        for cur_idx in range(n):
+            while answer and heights[answer[-1]] <= heights[cur_idx]:
+                answer.pop()
+            answer.append(cur_idx)
+        
+        return answer
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+same as before
+
+~~~
+space = O(N) 
+~~~
+same as before
