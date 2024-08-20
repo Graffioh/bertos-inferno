@@ -22,6 +22,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [56. Merge Intervals](#56-merge-intervals)
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
+- [162. Find Peak Element](#162-find-peak-element)
 - [227. Basic Calculator II](#227-basic-calculator-ii)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
 - [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
@@ -308,6 +309,53 @@ we go through both of the arrays once
 space = O(1) 
 ~~~
 we do the operations in place without extra memory
+
+
+## [162. Find Peak Element](https://leetcode.com/problems/find-peak-element)
+
+### key idea
+just compare the mid value, literally a binary search with some alterations
+
+remember to put the right/left to -inf if needed (mid - 1 or mid + 1 out of bound)
+
+~~~py
+class Solution:
+    def findPeakElement(self, nums: List[int]) -> int:
+        if len(nums) == 1:
+            return 0
+        
+        if len(nums) == 2:
+            return 0 if nums[0] > nums[1] else 1
+        
+        l,r = 0, len(nums) - 1
+        
+        while l <= r:
+            mid = (l + r) // 2
+
+            mid_val = nums[mid]
+            right_val = nums[mid + 1] if mid < len(nums) - 1 else float(-inf)
+            left_val = nums[mid - 1] if mid > 0 else float(-inf)
+
+            if left_val < mid_val > right_val:
+                return mid
+            elif mid_val < right_val:
+                l = mid + 1
+            else:
+                r = mid - 1
+        
+        return 0
+~~~
+
+**complexity**
+~~~
+time = O(logN) 
+~~~
+as the problem statement requested, we half it each time
+
+~~~
+space = O(1) 
+~~~
+no extra space is used
 
 ## [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description)
 
