@@ -23,6 +23,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
 - [162. Find Peak Element](#162-find-peak-element)
+- [199. Binary Tree Right Side View](#199-binary-tree-right-side-view)
 - [227. Basic Calculator II](#227-basic-calculator-ii)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
 - [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
@@ -33,6 +34,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
+- [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
 - [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
@@ -201,9 +203,8 @@ class Solution:
             if exp in expDict:
                 return expDict[exp]
             
-            # (x if exp % 2 else 1) is for dividing up odd number 
-            #   so 2^5 become 2^1 * 2^4
-            expDict[exp] = dfs(exp // 2) * dfs(exp // 2) * (x if exp % 2 else 1)
+            # (x if exp % 2 == 1 else 1) is for dividing up odd number 
+            expDict[exp] = dfs(exp // 2) * dfs(exp // 2) * (x if exp % 2 == 1 else 1)
 
             return expDict[exp]
         
@@ -356,6 +357,49 @@ as the problem statement requested, we half it each time
 space = O(1) 
 ~~~
 no extra space is used
+
+## [199. Binary Tree Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/description)
+
+### key idea
+
+really simple, since you need to return the right most value, we leverage the concept of the BFS to process the whole level and as soon as we arrive at the last element of the processed level, then we append it to the res
+
+~~~py
+class Solution:
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
+        if not root:
+            return []
+
+        queue = deque([root])
+        res = []
+
+        while queue:
+            cur_level_length = len(queue)
+
+            for i in range(cur_level_length):
+                node = queue.popleft()
+
+                if i == cur_level_length - 1:
+                    res.append(node.val)
+                
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+since we touch every single node of the tree due to bfs 
+
+~~~
+space = O(N) 
+~~~
+it depends on the height of the tree, but in the worst case (complete tree) we gonna store n elements
 
 ## [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description)
 
@@ -662,26 +706,22 @@ class Solution:
         if not root:
             return []
 
-        res = []
-        hmap = defaultdict(list)
+        columns = defaultdict(list)
         queue = deque([(0, root)])
 
         while queue:
             col, node = queue.popleft()
 
-            hmap[col].append(node.val)
+            columns[col].append(node.val)
 
             if node.left:
                 queue.append((col - 1, node.left))
+
             if node.right:
                 queue.append((col + 1, node.right))
-        
-        sortHmap = dict(sorted(hmap.items()))
 
-        for item in sortHmap.values():
-            res.append(item)
-
-        return res
+        res = dict(sorted(columns.items()))
+        return list(res.values())
 ~~~
 
 ### optimization
@@ -976,6 +1016,38 @@ in the worst case we'll visit all the tree (if low and high are at the edge of t
 space = O(N) 
 ~~~
 recursive call stack size since in the worst case we recurse n times (how many nodes there are)
+
+## [973. K Closest Points to Origin]()
+
+### key idea
+use a min heap, the closest points to the origin are the one at the start of the min heap
+
+~~~py
+class Solution:
+    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:
+        minHeap = []
+
+        for point in points:
+            dist = point[0] ** 2 + point[1] ** 2
+            heapq.heappush(minHeap, (dist, point))
+        
+        res = []
+        for _ in range(k):
+            res.append(heapq.heappop(minHeap)[1])
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+process every point
+
+~~~
+space = O(N) 
+~~~
+heap takes n points
 
 ## [1249. Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses)
 
