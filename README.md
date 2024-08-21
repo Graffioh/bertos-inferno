@@ -17,6 +17,7 @@ following company specific problems based on frequency
 i try solving the question for 30 minutes, then look at the solution until i fully understand it
 
 # Problems index
+- [15. 3Sum](#15-3sum)
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [50. Pow(x,n)](#50-powxn)
 - [56. Merge Intervals](#56-merge-intervals)
@@ -30,14 +31,75 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
 - [339. Nested List Weight Sum](#339-nested-list-weight-sum-premium)
+- [528. Random Pick with Weight](#528-random-pick-with-weight)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
+- [1091. Shortest Path in Binary Matrix](#1091-shortest-path-in-binary-matrix)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
 - [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
+
+## [15. 3Sum](https://leetcode.com/problems/3sum/description)
+
+### key idea
+
+use three pointers, one fixed at the beginning, two that moves from i + 1 to nums.length
+
+the key here is:
+
+- check if the total is < 0, > 0 or == 0
+- < 0, increment j so the number gets bigger
+- > 0, decrement k so the number gets smaller
+- == 0 append to res and move the two pointers
+- <ins>skip whenever i or j or k number is the same as the one before</ins>
+
+~~~py
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        nums.sort()
+
+        for i in range(len(nums) - 2):
+            # skip i duplicates
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+
+            j, k = i + 1, len(nums) - 1
+            while j < k:
+                if nums[i] + nums[j] + nums[k] < 0:
+                    j += 1
+                elif nums[i] + nums[j] + nums[k] > 0:
+                    k -= 1
+                else:
+                    res.append([nums[i], nums[j], nums[k]])
+                    j += 1
+                    k -= 1
+
+                    # skip j duplicates
+                    while j < k and nums[j] == nums[j - 1]:
+                        j += 1
+
+                    # skip k duplicates
+                    while j < k and nums[k] == nums[k + 1]:
+                        k -= 1
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N^2 + NlogN) = O(N^2)
+~~~
+          ^       ^
+    for & while  sorting
+
+~~~
+space = O(1) or <ins>**O(N)**</ins>
+~~~
+in python the sort takes N of space complexity due to how the library implemented the method
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
@@ -842,6 +904,57 @@ space = O(N)
 ~~~
 same as dfs
 
+## [528. Random Pick with Weight]()
+
+### key idea
+
+very difficult intuition, the problem statement is written by monkeys
+
+what the problem is saying is: given an array, the probability of picking the max value present in this array is higher then picking a value less than this max, now randomly pick an index and return it as a result by keeping count of the respective index weights
+
+use a prefix_sum that will be leveraged to simulate the ranges of probabilities and a binary search to search for the index
+
+honestly memorize the solution is pretty simple
+
+~~~py
+class Solution:
+    def __init__(self, w: List[int]):
+        self.prefix_sum = []
+
+        total = 0
+
+        for weight in w:
+            total += weight
+
+            self.prefix_sum.append(total)
+
+        self.maxValue = 0
+
+    def pickIndex(self) -> int:
+        target = random.uniform(0, self.maxValue)
+
+        l = 0
+        r = len(self.prefix_sum)
+
+        while l < r:
+            mid = (l + r) // 2
+
+            if self.prefix_sum[mid] < target:
+                l = mid + 1
+            else:
+                r = mid
+        
+        return l
+~~~
+
+**complexity**
+~~~
+time = init: O(N) - pickIndex: O(logN)
+~~~
+
+~~~
+space = init: O(N) - pickIndex: O(1)
+~~~
 
 ## [543. Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree)
 
@@ -1040,14 +1153,61 @@ class Solution:
 
 **complexity**
 ~~~
-time = O(N) 
+time = O(N log N + K log N) 
 ~~~
-process every point
+build the heap and process every point
 
 ~~~
 space = O(N) 
 ~~~
 heap takes n points
+
+## [1091. Shortest Path in Binary Matrix](https://leetcode.com/problems/shortest-path-in-binary-matrix)
+
+### key idea
+
+bfs to find the shortest path
+
+remember that you can go diagonally so there are 8 possible directions
+
+the bfs queue stores (row, column, length) and as soon row and column reach N - 1, return the length
+
+~~~py
+class Solution:
+    def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
+        queue = deque([(0,0,1)])
+        directions = [[1,0], [0,1], [-1,0], [0,-1], [1,1], [-1,1], [1,-1], [-1,-1]]
+        visited = set((0,0))
+
+        while queue:
+            r, c, length = queue.popleft()
+
+            if (min(r, c) < 0 or max(r, c) == len(grid) or grid[r][c] == 1):
+                continue
+            
+            if r == len(grid) - 1 and c == len(grid) - 1:
+                return length
+            
+            for row_dir, col_dir in directions:
+                new_row = r + row_dir
+                new_col = c + col_dir
+                if (new_row, new_col) not in visited:
+                    queue.append((new_row, new_col, length + 1))
+                    visited.add((new_row, new_col))
+        
+        return -1
+~~~
+
+**complexity**
+~~~
+time = O(N * M) 
+~~~
+we visit all the 2d matrix
+
+~~~
+space = O(N * M) 
+~~~
+we might have the entire matrix in the queue in the worst case
 
 ## [1249. Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses)
 
