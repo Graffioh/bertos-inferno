@@ -914,9 +914,13 @@ given an array of weights corresponding to their indexes, as the weight increase
 
 basically, the problem is saying: "randomly pick an index but take its weight into account"
 
-use a prefix sum to simulate the ranges of probabilities of each index and a binary search to find the correct range which will give us as a result the correct index
+to do this we utilize the concept of a cumulative distribution function (prefix sum)
 
-honestly memorize the solution, is pretty simple...
+it allows us to get intervals, and these intervals simulate the weight for their specific index by considering their length.
+
+'target = random.uniform(0, self.maxValue)' is used to get a random variable that is uniformly distributed, and thanks to this uniform distribution, we can say that the probability of this target being chosen is based on the length of the intervals created by the cdf
+
+honestly memorize the solution, it's better...
 
 ~~~py
 class Solution:
