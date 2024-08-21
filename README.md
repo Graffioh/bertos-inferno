@@ -908,13 +908,15 @@ same as dfs
 
 ### key idea
 
-very difficult intuition, the problem statement is written by monkeys
+this problem has a tricky intuition and the problem statement is written by monkeys
 
-what the problem is saying is: given an array, the probability of picking the max value present in this array is higher then picking a value less than this max, now randomly pick an index and return it as a result by keeping count of the respective index weights
+given an array of weights corresponding to their indexes, as the weight increases, the probabilty of randomly picking that specific weight's index also increases
 
-use a prefix_sum that will be leveraged to simulate the ranges of probabilities and a binary search to search for the index
+basically, the problem is saying: "randomly pick an index but take its weight into account"
 
-honestly memorize the solution is pretty simple
+use a prefix sum to simulate the ranges of probabilities of each index and a binary search to find the correct range which will give us as a result the correct index
+
+honestly memorize the solution, is pretty simple...
 
 ~~~py
 class Solution:
@@ -955,6 +957,10 @@ time = init: O(N) - pickIndex: O(logN)
 ~~~
 space = init: O(N) - pickIndex: O(1)
 ~~~
+
+### resources
+
+- [video explanation](https://www.youtube.com/watch?v=7x7Ydq2Wfvw)
 
 ## [543. Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree)
 
