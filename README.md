@@ -23,7 +23,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [56. Merge Intervals](#56-merge-intervals)
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
-- [146. LRU Chache](#146-lru-cache)
+- [146. LRU Cache](#146-lru-cache)
 - [162. Find Peak Element](#162-find-peak-element)
 - [199. Binary Tree Right Side View](#199-binary-tree-right-side-view)
 - [227. Basic Calculator II](#227-basic-calculator-ii)
@@ -375,7 +375,7 @@ space = O(1)
 ~~~
 we do the operations in place without extra memory
 
-## [146. LRU Chache](https://leetcode.com/problems/lru-cache/description)
+## [146. LRU Cache](https://leetcode.com/problems/lru-cache/description)
 
 ### key idea
 
