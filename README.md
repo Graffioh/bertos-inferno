@@ -23,6 +23,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [56. Merge Intervals](#56-merge-intervals)
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
+- [146. LRU Chache](#146-lru-cache)
 - [162. Find Peak Element](#162-find-peak-element)
 - [199. Binary Tree Right Side View](#199-binary-tree-right-side-view)
 - [227. Basic Calculator II](#227-basic-calculator-ii)
@@ -31,6 +32,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
 - [339. Nested List Weight Sum](#339-nested-list-weight-sum-premium)
+- [347. Top K Frequent Elements](#347-top-k-frequent-elements)
 - [528. Random Pick with Weight](#528-random-pick-with-weight)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
@@ -52,7 +54,7 @@ the key here is:
 
 - check if the total is < 0, > 0 or == 0
 - < 0, increment j so the number gets bigger
-- > 0, decrement k so the number gets smaller
+- /> 0, decrement k so the number gets smaller
 - == 0 append to res and move the two pointers
 - <ins>skip whenever i or j or k number is the same as the one before</ins>
 
@@ -372,6 +374,89 @@ we go through both of the arrays once
 space = O(1) 
 ~~~
 we do the operations in place without extra memory
+
+## [146. LRU Chache](https://leetcode.com/problems/lru-cache/description)
+
+### key idea
+
+the intuition is to have an hash map that stores these key value pairs
+
+the value is not actually the value but is a pointer to a node that stores key and value
+
+thanks to this we can use pointers to handle the lru mechanism
+
+double linked list
+
+left and right pointers (left = LRU, right = MRU)
+
+watch neetcode video in resources, his explanation is really good
+
+after getting the intuition the hard part is coding it tbh
+
+~~~py
+class Node:
+    def __init__(self, key, val):
+        self.key = key
+        self.val = val
+        self.next = self.prev = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cap = capacity
+        self.kv = {}
+        self.left, self.right = Node(0,0), Node(0,0)
+        self.left.next, self.right.prev = self.right, self.left
+    
+    # insert to right (MRU, Most Recently Used)
+    def insert(self, node):
+        prev, nxt = self.right.prev, self.right
+        prev.next = node
+        nxt.prev = node
+        node.next = nxt
+        node.prev = prev
+    
+    def remove(self, node):
+        prev, nxt = node.prev, node.next
+        prev.next = nxt
+        nxt.prev = prev
+
+    def get(self, key: int) -> int:
+        if key in self.kv:
+            self.remove(self.kv[key])
+            self.insert(self.kv[key])
+            return self.kv[key].val
+        return -1
+
+    def put(self, key: int, value: int) -> None:
+        # to update if it already exists (put it on most right position)
+        if key in self.kv:
+            self.remove(self.kv[key])
+        
+        self.kv[key] = Node(key, value)
+        self.insert(self.kv[key])
+
+        # eviction of LRU
+        if len(self.kv) > self.cap:
+            lru = self.left.next
+            self.remove(lru)
+            del self.kv[lru.key]
+~~~
+
+**complexity**
+
+~~~
+time = O(1) 
+~~~
+no iterations or expensive operations
+
+~~~
+space = O(N) 
+~~~
+the hash map
+
+### resources
+
+- [neetcode video](https://www.youtube.com/watch?v=7ABFKPK2hD4)
 
 
 ## [162. Find Peak Element](https://leetcode.com/problems/find-peak-element)
@@ -904,6 +989,51 @@ space = O(N)
 ~~~
 same as dfs
 
+## [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements)
+
+### key idea
+frequency count with hash map
+
+since heap would lead us to O(k*logn) complexity, we use a slight variation of a technique called *bucket sort*
+
+we construct an array based on the hash map that has the frequency count as index and a list of variables (with the same frequency) as a value
+
+then we iterate the frequency array from right to left, to find the k top elements
+
+~~~py
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        count = defaultdict(int) 
+        freq = [[] for i in range(len(nums) + 1)]
+        res = []
+
+        # count numbers frequency
+        for n in nums:
+            count[n] += 1
+        
+        # construct array with count as indices and a list of number as value
+        for num, cnt in count.items():
+            freq[cnt].append(num)
+
+        # iterate from left to right for k elements
+        for i in range(len(freq) - 1, 0, -1):
+            for n in freq[i]:
+                res.append(n)
+                if len(res) == k:
+                    return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we iterate through the whole array nums + construct the hash map (both O(n) operations)
+
+~~~
+space = O(N) 
+~~~
+for the hash map/freq array
+
 ## [528. Random Pick with Weight]()
 
 ### key idea
@@ -920,7 +1050,7 @@ it allows us to get intervals, and these intervals simulate the weight for their
 
 'target = random.uniform(0, self.maxValue)' is used to get a random variable that is uniformly distributed, and thanks to this uniform distribution, we can say that the probability of this target being chosen is based on the length of the intervals created by the cdf
 
-honestly memorize the solution, it's better...
+the solution is actually simple to remember
 
 ~~~py
 class Solution:
