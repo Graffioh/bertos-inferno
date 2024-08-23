@@ -168,7 +168,7 @@ in the worst case the for loop finishes, so full iteration + reversing
 ~~~
 space = O(1)
 ~~~
-all done in the place, baby :*
+all done in-place, baby :*
 
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
