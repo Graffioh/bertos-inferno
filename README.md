@@ -24,6 +24,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [56. Merge Intervals](#56-merge-intervals)
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
+- [138. Copy List with Random Pointer](#138-copy-list-with-random-pointer)
 - [146. LRU Cache](#146-lru-cache)
 - [162. Find Peak Element](#162-find-peak-element)
 - [199. Binary Tree Right Side View](#199-binary-tree-right-side-view)
@@ -442,6 +443,60 @@ we go through both of the arrays once
 space = O(1) 
 ~~~
 we do the operations in place without extra memory
+
+## [138. Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer)
+
+### key idea
+
+there is a simple way that involves an hash map but that would take O(n) space
+
+this approac ensures O(1) space thanks to the interleaving of the nodes
+
+basically we create a specular copy / clone of each node as their next
+
+then we assign the random pointers to the cloned nodes thanks to the original ones
+
+at the end we skip the original nodes by skipping the original ones, and thanks to this trick we'll have a deep copy of the original list due to different references for each node
+
+~~~py
+class Solution:
+  def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
+        if not head: 
+            return head
+
+        # create cloned node as the next of the respective original node
+        cur = head
+        while cur:
+            newnode = Node(cur.val, cur.next)
+            cur.next = newnode
+            cur = newnode.next
+        
+        # assign the random original node pointer to the cloned node
+        cur = head
+        while cur:
+            cur.next.random = cur.random.next if cur.random else None
+            cur = cur.next.next
+        
+        # skip original nodes to return only the cloned nodes
+        cur = head.next
+        while :
+            cur.next = cur.next.next if cur.next else None
+            cur = cur.next
+        
+        return head.next
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole list
+
+~~~
+space = O(1) 
+~~~
+no extra space used thanks to interleaving nodes
+
 
 ## [146. LRU Cache](https://leetcode.com/problems/lru-cache/description)
 
