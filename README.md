@@ -18,6 +18,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 
 # Problems index
 - [15. 3Sum](#15-3sum)
+- [31. Next Permutation](#31-next-permutation)
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [50. Pow(x,n)](#50-powxn)
 - [56. Merge Intervals](#56-merge-intervals)
@@ -54,7 +55,7 @@ the key here is:
 
 - check if the total is < 0, > 0 or == 0
 - < 0, increment j so the number gets bigger
-- /> 0, decrement k so the number gets smaller
+- \> 0, decrement k so the number gets smaller
 - == 0 append to res and move the two pointers
 - <ins>skip whenever i or j or k number is the same as the one before</ins>
 
@@ -94,14 +95,81 @@ class Solution:
 **complexity**
 ~~~
 time = O(N^2 + NlogN) = O(N^2)
-~~~
           ^       ^
     for & while  sorting
+~~~
 
 ~~~
-space = O(1) or <ins>**O(N)**</ins>
+space = O(1) or O(N) <--
 ~~~
 in python the sort takes N of space complexity due to how the library implemented the method
+
+## [31. Next Permutation](https://leetcode.com/problems/next-permutation)
+
+### key idea
+
+the idea is simple, why it works is a little bit harder to explain
+
+<ins>**idea**</ins>
+since it must be done in place, there needs to be some sort of swapping
+
+if we look from right to left and all the numbers are in increasing order, then there is no next lexicographical permutation
+
+now we must go in reverse order, finding the pivot, then after the pivot is found we must swap the pivot with the first number that is greater than the pivot from right to left
+
+and after this reverse the part of the array after the pivot
+
+<ins>**why it works?**</ins>
+
+going from right to left and finding the pivot, means that at the right of the pivot, since the array is in increasing order (reversed), there can't be some rearrangement that create a larger lexicographical permutation
+
+now we want to create a permutation that is just larger than the current one, therefore we need to replace the pivot with the number which is just larger than itself among the numbers on the right part of the pivot
+
+something like this lol
+
+~~~py
+class Solution:
+    def nextPermutation(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+
+        # 1 4 5 8 7
+
+        pivot = None
+
+        # find the pivot
+        for i in range(len(nums) - 1, 0, -1):
+            if nums[i] > nums[i - 1]:
+                pivot = i - 1
+                break
+        else: # if not found (full iteration done), then just return the 
+              #     reversed array as in the example
+            nums.reverse()
+            return
+        
+        # swap the pivot with the first greater num found from right to left
+        swap = len(nums) - 1
+        while nums[swap] <= nums[pivot]:
+            swap -= 1
+
+        nums[swap], nums[pivot] = nums[pivot], nums[swap]
+
+        # reverse the part after the pivot because yes
+        nums[pivot + 1:] = reversed(nums[pivot + 1:])
+~~~
+
+**complexity**
+~~~
+time = O(N + N) -> O(N)
+~~~
+in the worst case the for loop finishes, so full iteration + reversing
+
+~~~
+space = O(1)
+~~~
+all done in the place, baby :*
+
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
@@ -390,8 +458,6 @@ double linked list
 left and right pointers (left = LRU, right = MRU)
 
 watch neetcode video in resources, his explanation is really good
-
-after getting the intuition the hard part is coding it tbh
 
 ~~~py
 class Node:
@@ -961,9 +1027,10 @@ the key idea here is to spread out the list at the end of the queue each time on
 ~~~py
 class Solution:
     def depthSum(self, nestedList: List[NestedInteger]) -> int:
-        queue = deque(nestedList)
         depth = 1
         res = 0
+        # spread out the whole list in the queue (the first level) for the bfs
+        queue = deque(nestedList)
 
         while queue:
             for _ in range(len(queue)):
