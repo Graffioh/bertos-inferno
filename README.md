@@ -1267,9 +1267,17 @@ the call stack is based on the height of the tree and in the worst case it could
 
 ### key idea
 
-we use prefix sum because the difference between two prefix sums gives us the sum of the subarray between those two indices: prefix_sum_i - prefix_sum_j = subarray_sum_ij = k
+we use prefix sum because the difference between two prefix sums gives us the sum of the subarray between those two indices:
 
-let's use this concept to find efficiently how many subarray will give k as our result: prefixsum_i - k = prefixsum_j where i > j
+~~~
+prefix_sum_i - prefix_sum_j = subarray_sum_ij = k
+~~~
+
+let's use this concept to find efficiently how many subarray will give k as our result:
+
+~~~
+prefixsum_i - k = prefixsum_j where i > j
+~~~
 
 we can calculate prefix sums and count those using an hashmap
 
