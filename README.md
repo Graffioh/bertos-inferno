@@ -37,6 +37,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [347. Top K Frequent Elements](#347-top-k-frequent-elements)
 - [528. Random Pick with Weight](#528-random-pick-with-weight)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
+- [560. Subarray Sum Equals K](#560-subarray-sum-equals-k)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
@@ -1261,6 +1262,49 @@ we go through each node once with the dfs
 space = O(N) 
 ~~~
 the call stack is based on the height of the tree and in the worst case it could be O(N)
+
+## [560. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k)
+
+### key idea
+
+we use prefix sum because the difference between two prefix sums gives us the sum of the subarray between those two indices: prefix_sum[i] - prefix_sum[j] = subarray_sum_ij = k
+
+let's use this concept to find efficiently how many subarray will give k as our result: prefixsum_i - k = prefixsum_j where i > j
+
+we can calculate prefix sums and count those using an hashmap
+
+then whenever 'prefixsum - k' is in the hashmap, it means that we have found a new subarray
+
+easy
+
+~~~py
+class Solution:
+    def subarraySum(self, nums: List[int], k: int) -> int:
+        prefix_dict = defaultdict(int)
+        prefix_sum = res = 0
+
+        # this is important for some edge cases to count the very first subarray
+        prefix_dict[0] = 1
+
+        for num in nums:
+            prefix_sum += num
+
+            if prefix_sum - k in prefix_dict:
+                res += prefix_dict[prefix_sum - k]
+            prefix_dict[prefix_sum] += 1
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we iterate the whole array nums
+
+~~~
+space = O(N) 
+~~~
+for the hashmap
 
 ## 637. Valid Word Abbreviation [(premium)](https://leetcode.com/problems/valid-word-abbreviation/description) | [('premium')](https://www.lintcode.com/problem/637/)
 
