@@ -44,6 +44,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
 - [1091. Shortest Path in Binary Matrix](#1091-shortest-path-in-binary-matrix)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
+- [1570. Dot Product of Two Sparse Vectors](#157-dot-product-of-two-sparse-vectors-premium--premium)
 - [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
 
@@ -1573,6 +1574,60 @@ space = O(N)
 ~~~
 res/filtered size is at most n
 
+## 1570. Dot Product of Two Sparse Vectors [(premium)](https://leetcode.com/problems/dot-product-of-two-sparse-vectors/description) | [('premium')](https://www.lintcode.com/problem/3691/)
+
+### key idea
+there are actually 3 solutions:
+
+- naive: store the entire array and do the 1 by 1 product
+- hashmap: don't store the whole array by storing only the non-zero values as index -> value
+- tuple array and two pointers: array of tuples (idx, val) with two pointers, one for each vector
+
+the tuple array is the most efficient one since there could be problems if the hash functions sucks basically
+
+really easy to implement
+
+~~~py
+class SparseVector:
+    def __init__(self, nums: List[int]):
+        self.tuple_arr = []
+
+        for i, n in enumerate(nums):
+            if n != 0:
+                self.tuple_arr.append((i, n))
+
+    # Return the dotProduct of two sparse vectors
+    def dotProduct(self, vec: 'SparseVector') -> int:
+        res = 0
+        p1 = p2 = 0       
+
+        while p1 < len(self.tuple_arr) and p2 < len(vec.tuple_arr):
+            p1_idx, p1_val = self.tuple_arr[p1]
+            p2_idx, p2_val = vec.tuple_arr[p2]
+
+            if p1_idx == p2_idx:
+                res += p1_val * p2_val
+                p1 += 1
+                p2 += 1
+            else:
+                if p1_idx > p2_idx:
+                    p2 += 1
+                else:
+                    p1 += 1
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N + M) 
+~~~
+in the worst case the idx wont match and a full iteration for both has to be done
+
+~~~
+space = O(N + M) 
+~~~
+we store two tuple arrays
+
 ## 1650. Lowest Common Ancestor of a Binary Tree III [(premium)](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii)
 
 ### key idea
@@ -1622,8 +1677,6 @@ no extra space used, only iterations (if we don't count the call stack to go to 
 ## 1762. Buildings With an Ocean View [(premium)](https://leetcode.com/problems/buildings-with-an-ocean-view/description)
 
 ### key idea
-(personal solution)
-
 easy but marked medium, just watch for the tallest building with a ptr, skip every smaller building and just insert in the result array the indexes of the higher buildings. the code is self explanatory
 
 we use a deque to save time by appending at the left instead of reversing the array at the end
