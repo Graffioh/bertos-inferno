@@ -44,7 +44,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
 - [1091. Shortest Path in Binary Matrix](#1091-shortest-path-in-binary-matrix)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
-- [1570. Dot Product of Two Sparse Vectors](#157-dot-product-of-two-sparse-vectors-premium--premium)
+- [1570. Dot Product of Two Sparse Vectors](#1570-dot-product-of-two-sparse-vectors-premium--premium)
 - [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
 
