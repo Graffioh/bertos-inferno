@@ -37,6 +37,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [339. Nested List Weight Sum](#339-nested-list-weight-sum-premium)
 - [346. Moving Average from Data Stream](#346-moving-average-from-data-stream-premium--premium) 
 - [347. Top K Frequent Elements](#347-top-k-frequent-elements)
+- [426. Convert Binary Search Tree to Sorted Doubly Linked List](#426-convert-binary-search-tree-to-sorted-doubly-linked-list-premium--premium) 
 - [523. Continuous Subarray Sum](#523-continuous-subarray-sum)
 - [528. Random Pick with Weight](#528-random-pick-with-weight)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
@@ -46,6 +47,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [791. Custom Sort String](#791-custom-sort-string)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
+- [1004. Max Consecutive Ones III](#1004-max-consecutive-ones-iii)
 - [1091. Shortest Path in Binary Matrix](#1091-shortest-path-in-binary-matrix)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
 - [1570. Dot Product of Two Sparse Vectors](#1570-dot-product-of-two-sparse-vectors-premium--premium)
@@ -1267,6 +1269,62 @@ space = O(N)
 ~~~
 for the hash map/freq array
 
+## 426. Convert Binary Search Tree to Sorted Doubly Linked List [(premium)](https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/description/) | [('premium')](https://www.lintcode.com/problem/1534/)
+
+### key idea
+
+in-order traversal
+
+keep track of the first (so the most left value) and last (every return we modify this last, always in-order)
+
+while doing the recursive calls, as operations, we need to modify the left (predecessor) and right (successor) pointers
+
+at the end remember to link first and last
+
+~~~py
+class Solution:
+    def treeToDoublyList(self, root: 'Optional[Node]') -> 'Optional[Node]':
+        first = None
+        last = None
+
+        def dfs(node):
+            if not node:
+                return 
+            
+            dfs(node.left)
+
+            nonlocal first
+            nonlocal last
+
+            if not last:
+                first = node
+            else:
+                last.right = node
+                node.left = last
+
+            last = node
+
+            dfs(node.right)
+
+        dfs(root)
+
+        first.left = last
+        last.right = first
+
+        return first
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole tree where n is the tree size
+
+~~~
+space = O(N) 
+~~~
+O(logN) if the tree is balanced, but in the worst case the tree is not balanced, so N is the size of recursive call stack
+
 ## [523. Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)
 
 ### key idea
@@ -1677,6 +1735,51 @@ build the heap and process every point
 space = O(N) 
 ~~~
 heap takes n points
+
+## [1004. Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii)
+
+### key idea
+
+greedy sliding window approach
+
+if we encounter a 0, we decrement k
+
+if k goes negative, that means that we took too many 0s, so we must move the left pointer up and we need to retake one 0 each time
+
+check the maximum of all the results
+
+~~~py
+class Solution:
+    def longestOnes(self, nums: List[int], k: int) -> int:
+        l = res = 0
+
+        for r, num in enumerate(nums):
+            # if num == 0:
+            #     k -= 1
+            k -= 1 - num
+            
+            if k < 0:
+                # if nums[l] == 0:
+                #   k += 1
+                k += 1 - nums[l]
+                
+                l += 1
+            else:
+                res = max(res, (r - l) + 1)
+
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+only one iteration
+
+~~~
+space = O(1) 
+~~~
+only pointers, no extra space used
 
 ## [1091. Shortest Path in Binary Matrix](https://leetcode.com/problems/shortest-path-in-binary-matrix)
 
