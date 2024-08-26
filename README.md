@@ -28,18 +28,22 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [146. LRU Cache](#146-lru-cache)
 - [162. Find Peak Element](#162-find-peak-element)
 - [199. Binary Tree Right Side View](#199-binary-tree-right-side-view)
+- [207. Course Schedule](#207-course-schedule)
 - [227. Basic Calculator II](#227-basic-calculator-ii)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
 - [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
 - [339. Nested List Weight Sum](#339-nested-list-weight-sum-premium)
+- [346. Moving Average from Data Stream](#346-moving-average-from-data-stream-premium--premium) 
 - [347. Top K Frequent Elements](#347-top-k-frequent-elements)
+- [523. Continuous Subarray Sum](#523-continuous-subarray-sum)
 - [528. Random Pick with Weight](#528-random-pick-with-weight)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
 - [560. Subarray Sum Equals K](#560-subarray-sum-equals-k)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
+- [791. Custom Sort String](#791-custom-sort-string)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
 - [1091. Shortest Path in Binary Matrix](#1091-shortest-path-in-binary-matrix)
@@ -671,6 +675,66 @@ space = O(N)
 ~~~
 it depends on the height of the tree, but in the worst case (complete tree) we gonna store n elements
 
+## [207. Course Schedule](https://leetcode.com/problems/course-schedule/)
+
+### key idea
+
+here if you do some examples, you can see that:
+- this is a graph problem
+- you just need to check for cycles
+
+so construct a graph, do a dfs to check for cycles and that's it
+
+~~~py
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        graph = defaultdict(list)
+
+        # 0 = white, 1 = grey, 2 = black
+        visited = [0] * (numCourses)
+
+        # graph construction
+        for src, dst in prerequisites:
+            graph[src].append(dst)
+
+        # dfs to check for cycles
+        def courseCheck(node, check):
+            visited[node] = 1
+
+            for adj in graph[node]:
+                if visited[adj] == 1:
+                    return False
+
+                if visited[adj] == 0:
+                    check = courseCheck(adj, check)
+                    if check == False:
+                        return False
+                
+            visited[node] = 2
+            return check
+        
+        # dfs every source
+        vertices = list(graph.keys())
+        for v in vertices:
+            if visited[v] == 0:
+                check = courseCheck(v, True)
+                if check == False:
+                    return False
+
+        return True
+~~~
+
+**complexity**
+~~~
+time = O(V + E) 
+~~~
+typical graph dfs complexity, we go through all edges and pass through all vertices in the worst case -> we traverse the whole graph
+
+~~~
+space = O(V) 
+~~~
+graph size, number of vertices
+
 ## [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description)
 
 ### key idea
@@ -1113,6 +1177,51 @@ space = O(N)
 ~~~
 same as dfs
 
+## 346. Moving Average from Data Stream [(premium)](https://leetcode.com/problems/moving-average-from-data-stream) | [('premium')](https://www.lintcode.com/problem/642/)
+
+### key idea
+
+the naive solution is with a queue, but using a circular array is slightly better because:
+
+- moving pointers, automatically discard the 'out of bound' elements, while with the queue we should do a deque operation each time
+- we only need to store the pointer that points to the head and not on both side like the queue (head for popleft and tail for append)
+
+
+so that's it basically, just remember to keep the size bounded to the requested size of the data stream
+
+~~~py
+class MovingAverage:
+
+    def __init__(self, size: int):
+        self.size = size
+        self.circular_array = [0] * self.size
+        self.head = 0
+        self.count = 0
+        self.res = 0
+
+    def next(self, val: int) -> float:
+        self.count += 1
+
+        tail = (self.head + 1) % self.size
+        self.res = self.res - self.circular_array[tail] + val
+
+        self.head = (self.head + 1) % self.size
+        self.circular_array[self.head] = val
+
+        return self.res / min(self.size, self.count)
+~~~
+
+**complexity**
+~~~
+time = O(1) 
+~~~
+every call of next does only constant time operations
+
+~~~
+space = O(N) 
+~~~
+size of circular array
+
 ## [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements)
 
 ### key idea
@@ -1157,6 +1266,57 @@ we iterate through the whole array nums + construct the hash map (both O(n) oper
 space = O(N) 
 ~~~
 for the hash map/freq array
+
+## [523. Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)
+
+### key idea
+
+hasmap and prefix sum
+
+store in the hashmap the reminder (key) and index (value), as soon a reminder is found, it means that two prefix sums have the same reminder and the last thing to check is if the length is greater than 1
+
+example: 
+
+[23, 2, 4, 3, 3] with k = 6
+
+- 23 % 6 = 5
+- 29 % 6 = 5
+- 35 % 6 = 5
+
+it means that all three make up a subarray of length 3 where the sum of all elements is a multiple of k, because we'll have:
+- 23 - 29 = 6 (6 is a multiple of k)
+- 23 - 35 = 12 (12 is a multiple of k)
+- and obviously 29 - 35 = 6 (6 is a multiple of k)
+
+~~~py
+class Solution:
+    def checkSubarraySum(self, nums: List[int], k: int) -> bool:
+        hmap = defaultdict(int)
+        prefix_sum = 0
+        hmap[0] = -1
+        
+        for i in range(len(nums)):
+            prefix_sum += nums[i]
+
+            if prefix_sum % k in hmap:
+                if i - hmap[prefix_sum % k] > 1:
+                    return True
+            else:
+                hmap[prefix_sum % k] = i
+        
+        return False
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we iterate only once
+
+~~~
+space = O(N) 
+~~~
+hash map size
 
 ## [528. Random Pick with Weight]()
 
@@ -1406,6 +1566,47 @@ for skipLeft/skipRight
 we can optimize this problem by eliminating skipLeft/skipRight and reversing
 
 by using only pointers
+
+## [791. Custom Sort String](https://leetcode.com/problems/custom-sort-string)
+
+### key idea
+
+hashmap that counts the chars in s
+
+for each char in order, if it's also present in the hashmap build the string with n times that char
+
+at the end the string s could be left with some extra characters not present in order, so iterate through the remaining char in the hashmap and construct the final result
+
+the code is pretty self explanatory
+
+~~~py
+class Solution:
+    def customSortString(self, order: str, s: str) -> str:
+        counter = collections.Counter(s)
+        res = []
+
+        for c in order:
+            if c in counter:
+                res.extend([c] * counter[c])
+                del counter[c]
+        
+        for c, n in counter.items():
+                res.extend([c] * n)
+        
+        return "".join(res)
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through all the string + counter operation
+
+~~~
+space = O(N) 
+~~~
+counter size
+
 
 ## [938. Range Sum of BST](https://leetcode.com/problems/range-sum-of-bst)
 
