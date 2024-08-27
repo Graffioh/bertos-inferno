@@ -45,6 +45,8 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [791. Custom Sort String](#791-custom-sort-string)
+- [827. Making A Large Island](#827-making-a-large-island)
+- [921. Minimum Add to Make Parentheses Valid](#921-minimum-add-to-make-parentheses-valid)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
 - [1004. Max Consecutive Ones III](#1004-max-consecutive-ones-iii)
@@ -53,6 +55,8 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [1570. Dot Product of Two Sparse Vectors](#1570-dot-product-of-two-sparse-vectors-premium--premium)
 - [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
+
+---
 
 ## [15. 3Sum](https://leetcode.com/problems/3sum/description)
 
@@ -1284,6 +1288,9 @@ at the end remember to link first and last
 ~~~py
 class Solution:
     def treeToDoublyList(self, root: 'Optional[Node]') -> 'Optional[Node]':
+        if not root:
+            return None
+
         first = None
         last = None
 
@@ -1665,6 +1672,120 @@ space = O(N)
 ~~~
 counter size
 
+## [827. Making A Large Island](https://leetcode.com/problems/making-a-large-island)
+
+### key idea
+
+first calculate the area of connected 1 islands and mark each island with a unique island_id
+
+these islands will be store in an hashmap
+
+after this, we go through all the 0s and check for surrounding islands, if there is a surrounding island then add its area (using the hashmap and island_id)
+
+after all 0s are computed, we've found the largest island with at most one 0
+
+~~~py
+class Solution:
+    def largestIsland(self, grid: List[List[int]]) -> int:
+        island_id = -1
+        island_areas = {}
+        directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+
+        def compute_area(r, c):
+            if (0 <= r < len(grid)) and (0 <= c < len(grid[0])) and grid[r][c] == 1:
+                grid[r][c] = island_id
+
+                area = 1
+                for r_inc, c_inc in directions:
+                    new_r = r + r_inc
+                    new_c = c + c_inc
+                    area += compute_area(new_r, new_c)
+                
+                return area
+            else:
+                return 0
+
+        # compute the areas of all islands and assign them an id
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == 1:
+                    area = compute_area(i, j)
+
+                    island_areas[island_id] = area
+                    island_id -= 1
+        
+        max_area = 0
+
+        for i in range(len(grid)):
+            for j in range(len(grid[0])):
+                if grid[i][j] == 0:
+                    area = 1
+
+                    # build the surrounding
+                    surrounding = set()
+                    for r_inc, c_inc in directions:
+                        new_r = i + r_inc
+                        new_c = j + c_inc
+
+                        if (0 <= new_r < len(grid)) and (0 <= new_c < len(grid[0]) and grid[new_r][new_c] != 0):
+                            surrounding.add(grid[new_r][new_c])
+                     
+                    # use the surrounding of the 0 to compute the whole area
+                    for island_id in surrounding:
+                        area += island_areas[island_id]
+                    
+                    max_area = max(max_area, area)
+        
+        # there could happen a case where the whole grid is 1
+        return max_area if max_area else len(grid) ** 2
+~~~
+
+**complexity**
+~~~
+time = O(N^2) 
+~~~
+N * N size of the matrix, so it's the iterations through all the matrix
+
+~~~
+space = O(N^2 / 2) 
+~~~
+this is the worst case if the matrix is half 0 and half 1
+
+## [921. Minimum Add to Make Parentheses Valid](https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description)
+
+### key idea
+
+check for extra right parentheses and whenever one is found increment a counter that counts how many open parentheses do we need to add
+
+~~~py
+class Solution:
+    def minAddToMakeValid(self, s: str) -> int:
+        left_count = right_count = added = 0
+
+        for c in s:
+            if c == "(":
+                left_count += 1
+            else:
+                if right_count < left_count:
+                    right_count += 1
+                else:
+                    added += 1
+        
+        added += left_count - right_count
+        
+        return added
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through all the string
+
+~~~
+space = O(1) 
+~~~
+only counters, no extra space used
 
 ## [938. Range Sum of BST](https://leetcode.com/problems/range-sum-of-bst)
 
