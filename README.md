@@ -24,6 +24,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [56. Merge Intervals](#56-merge-intervals)
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
+- [133. Clone Graph](#133-clone-graph)
 - [138. Copy List with Random Pointer](#138-copy-list-with-random-pointer)
 - [146. LRU Cache](#146-lru-cache)
 - [162. Find Peak Element](#162-find-peak-element)
@@ -37,6 +38,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [339. Nested List Weight Sum](#339-nested-list-weight-sum-premium)
 - [346. Moving Average from Data Stream](#346-moving-average-from-data-stream-premium--premium) 
 - [347. Top K Frequent Elements](#347-top-k-frequent-elements)
+- [398. Random Pick Index](#398-random-pick-index)
 - [426. Convert Binary Search Tree to Sorted Doubly Linked List](#426-convert-binary-search-tree-to-sorted-doubly-linked-list-premium--premium) 
 - [523. Continuous Subarray Sum](#523-continuous-subarray-sum)
 - [528. Random Pick with Weight](#528-random-pick-with-weight)
@@ -455,6 +457,49 @@ we go through both of the arrays once
 space = O(1) 
 ~~~
 we do the operations in place without extra memory
+
+## [133. Clone Graph](https://leetcode.com/problems/clone-graph)
+
+### key idea
+
+use an hashmap to keep the old_node : cloned_node mapping
+
+do a bfs, clone the nodes and remember to populate neighbors array for each clone
+
+~~~py
+class Solution:
+    def cloneGraph(self, node: Optional['Node']) -> Optional['Node']:
+        if not node:
+            return None
+
+        cloned = {}
+        cloned[node] = Node(node.val, [])
+
+        q = deque([node])
+
+        while q:
+            cur = q.popleft()
+
+            for neigh in cur.neighbors:
+                if neigh not in cloned:
+                    cloned[neigh] = Node(neigh.val, [])
+                    q.append(neigh)
+                
+                cloned[cur].neighbors.append(cloned[neigh])
+
+        return cloned[node]
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole graph
+
+~~~
+space = O(N) 
+~~~
+hashmap size, storing all the nodes of the graph
 
 ## [138. Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer)
 
@@ -1273,6 +1318,47 @@ space = O(N)
 ~~~
 for the hash map/freq array
 
+## [398. Random Pick Index](https://leetcode.com/problems/random-pick-index/description)
+
+### key idea
+
+reservoir sampling
+
+this technique let us choose a random index without using extra space complexity
+
+~~~py
+class Solution:
+
+    def __init__(self, nums: List[int]):
+        self.nums = nums
+
+    def pick(self, target: int) -> int:
+        count = pick_index = 0
+
+        for i, n in enumerate(self.nums):
+            if n == target:
+                count += 1
+
+                if random.randint(1, count) == count:
+                    pick_index = i
+        return pick_index
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we iterate through all nums
+
+~~~
+space = O(1) 
+~~~
+no extra memory used
+
+### resources
+
+- [reservoir sampling article](https://florian.github.io/reservoir-sampling/)
+
 ## 426. Convert Binary Search Tree to Sorted Doubly Linked List [(premium)](https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/description/) | [('premium')](https://www.lintcode.com/problem/1534/)
 
 ### key idea
@@ -1691,15 +1777,15 @@ class Solution:
         island_areas = {}
         directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
-        def compute_area(r, c):
-            if (0 <= r < len(grid)) and (0 <= c < len(grid[0])) and grid[r][c] == 1:
-                grid[r][c] = island_id
+        def compute_area(i, j):
+            if (0 <= i < len(grid)) and (0 <= j < len(grid[0])) and grid[i][j] == 1:
+                grid[i][j] = island_id
 
                 area = 1
                 for r_inc, c_inc in directions:
-                    new_r = r + r_inc
-                    new_c = c + c_inc
-                    area += compute_area(new_r, new_c)
+                    new_i = i + i_inc
+                    new_j = j + j_inc
+                    area += compute_area(new_i, new_j)
                 
                 return area
             else:
@@ -1723,12 +1809,12 @@ class Solution:
 
                     # build the surrounding
                     surrounding = set()
-                    for r_inc, c_inc in directions:
-                        new_r = i + r_inc
-                        new_c = j + c_inc
+                    for i_inc, j_inc in directions:
+                        new_i = i + i_inc
+                        new_j = j + j_inc
 
-                        if (0 <= new_r < len(grid)) and (0 <= new_c < len(grid[0]) and grid[new_r][new_c] != 0):
-                            surrounding.add(grid[new_r][new_c])
+                        if (0 <= new_i < len(grid)) and (0 <= new_j < len(grid[0]) and grid[new_i][new_j] != 0):
+                            surrounding.add(grid[new_i][new_j])
                      
                     # use the surrounding of the 0 to compute the whole area
                     for island_id in surrounding:
