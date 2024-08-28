@@ -80,7 +80,7 @@ class Solution:
             return ""
 
         base = v[0]
-        for i in range(len(v)):
+        for i in range(len(base)):
             for word in v[1:]:
                 if i == len(word) or word[i] != base[i]:
                     return base[0:i]
