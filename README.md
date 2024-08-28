@@ -18,7 +18,10 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 
 # Problems index
 - [15. 3Sum](#15-3sum)
+- [17. Letter Combinations of a Phone Number](#17-letter-combinations-of-a-phone-number)
+- [23. Merge k Sorted Lists](#23-merge-k-sorted-lists)
 - [31. Next Permutation](#31-next-permutation)
+- [34. Find First and Last Position of Element in Sorted Array](#34-find-first-and-last-position-of-element-in-sorted-array)
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [50. Pow(x,n)](#50-powxn)
 - [56. Merge Intervals](#56-merge-intervals)
@@ -119,6 +122,106 @@ space = O(1) or O(N) <--
 ~~~
 in python the sort takes N of space complexity due to how the library implemented the method
 
+## [17. Letter Combinations of a Phone Number](https://leetcode.com/problems/letter-combinations-of-a-phone-number)
+
+### key idea
+
+hashmap to map the numbers to its respective letters
+
+then backtrack to explore all different possibilities going by each digit one by one
+
+~~~py
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        if not digits:
+            return []
+
+        num_to_chars = {
+            "2": ["a", "b", "c"], 
+            "3": ["d", "e", "f"], 
+            "4": ["g", "h", "i"],
+            "5": ["j", "k", "l"], 
+            "6": ["m", "n", "o"], 
+            "7": ["p", "q", "r", "s"], 
+            "8": ["t", "u", "v"], 
+            "9": ["w", "x", "y", "z"]
+            }
+        res = []
+
+        def dfs(i, cur_string):
+            if i == len(digits):
+                res.append("".join(cur_string))
+                return
+
+            for c in num_to_chars[digits[i]]:
+                cur_string.append(c)
+                dfs(i + 1, cur_string)
+                cur_string.pop()
+        
+        dfs(0, [])
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(4^N * N)
+~~~
+in the worst case we could get N digits of only '7' and/or '9' and as you can see its corresponding letters array is of length 4
+
+~~~
+space = O(N) or O(4^N) if we count recursive stack space
+~~~
+
+## [23. Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists)
+
+### key idea
+
+heap solution works but it's not optimized since the heap take some space
+
+the most optimal solution is merging the lists two by two by defining an interval where we pick the two lists
+
+each time this interval doubles so the result halves each time and at the end we are going to have the first list that represents the result, so all the lists merged into the first one
+
+~~~py
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        if not lists:
+            return None
+            
+        def merge(l1, l2):
+            if not l1:
+                return l2
+            if not l2:
+                return l1
+            else:
+                if l1.val <= l2.val:
+                    l1.next = merge(l1.next, l2)
+                    return l1
+                else:
+                    l2.next = merge(l1, l2.next)
+                    return l2
+
+        interval = 1
+
+        while interval < len(lists):
+            for i in range(0, len(lists) - interval, interval * 2):
+                lists[i] = merge(lists[i], lists[i + interval])
+            interval *= 2
+        return lists[0]
+~~~
+
+**complexity**
+~~~
+time = O(N*logK)
+~~~
+N -> total number of elements
+log(k) -> we halves each time the input by picking only two lists at a time
+
+~~~
+space = O(1)
+~~~
+no extra memory used, the result will be the first list that is already present in the input
+
 ## [31. Next Permutation](https://leetcode.com/problems/next-permutation)
 
 ### key idea
@@ -185,6 +288,52 @@ space = O(1)
 ~~~
 all done in-place, baby :*
 
+## [34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/description)
+
+### key idea
+
+it's a binary search slightly modified
+
+basically we search for the left most and right most index of the target value, using two binary search
+
+~~~py
+class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        def search_idx(is_left_check):
+            l, r = 0, len(nums) - 1
+            idx = -1
+
+            while l <= r:
+                mid = (l + r) // 2
+
+                if nums[mid] < target:
+                    l = mid + 1
+                elif nums[mid] > target:
+                    r = mid - 1
+                else:
+                    idx = mid
+                    if is_left_check:
+                        r = mid - 1
+                    else:
+                        l = mid + 1
+            return idx
+
+        left_idx = search_idx(True)
+        right_idx = search_idx(False)
+
+        return [left_idx, right_idx]
+~~~
+
+**complexity**
+~~~
+time = O(logN)
+~~~
+binary search, input halves each time
+
+~~~
+space = O(1)
+~~~
+no extra memory used
 
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
