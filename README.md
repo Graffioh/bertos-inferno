@@ -17,6 +17,7 @@ following company specific problems based on frequency
 i try solving the question for 30 minutes, then look at the solution until i fully understand it
 
 # Problems index
+- [14. Longest Common Prefix](#14-longest-common-prefix)
 - [15. 3Sum](#15-3sum)
 - [17. Letter Combinations of a Phone Number](#17-letter-combinations-of-a-phone-number)
 - [23. Merge k Sorted Lists](#23-merge-k-sorted-lists)
@@ -63,6 +64,40 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
 
 ---
+
+## [14. Longest Common Prefix](https://leetcode.com/problems/longest-common-prefix)
+
+### key idea
+
+vertical scanning
+
+pick a base, loop through all the words and as soon as one character is different from the base or we went through the whole word (this will hit when we encounter the shortest word), then return the prefix from the start to the point we arrived 
+
+~~~py
+class Solution:
+    def longestCommonPrefix(self, v: List[str]) -> str:
+        if len(v) == 0:
+            return ""
+
+        base = v[0]
+        for i in range(len(v)):
+            for word in v[1:]:
+                if i == len(word) or word[i] != base[i]:
+                    return base[0:i]
+        
+        return base
+~~~
+
+**complexity**
+~~~
+time = O(S)
+~~~
+S -> the sum of all chars in all strings, in the worst case n equal strings with length m so S = n * m
+
+~~~
+space = O(1)
+~~~
+no extra space used
 
 ## [15. 3Sum](https://leetcode.com/problems/3sum/description)
 
