@@ -48,6 +48,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
 - [560. Subarray Sum Equals K](#560-subarray-sum-equals-k)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
+- [670. Maximum Swap](#670-maximum-swap)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [791. Custom Sort String](#791-custom-sort-string)
 - [827. Making A Large Island](#827-making-a-large-island)
@@ -214,7 +215,7 @@ class Solution:
 ~~~
 time = O(N*logK)
 ~~~
-N -> total number of elements
+N -> total number of elements\\
 log(k) -> we halves each time the input by picking only two lists at a time
 
 ~~~
@@ -1820,6 +1821,64 @@ both word and abbr are of size n
 space = O(1) 
 ~~~
 we only use pointers
+
+## [670. Maximum Swap](https://leetcode.com/problems/maximum-swap)
+
+### key idea
+
+the intuition is simple, just find the leftmost smallest value with on his right the rightmost largest value
+
+the code is a little tricky but it's fun because we are parsing back and forth the number
+
+~~~py
+class Solution:
+    def maximumSwap(self, num: int) -> int:
+        if num <= 11:
+            return num
+        
+        # convert the integer number in an array
+        num_as_arr = deque()
+        while num:
+            num_as_arr.appendleft(num % 10)
+            num //= 10
+        
+        # get the rightmost largest value for each number
+        max_seen, max_seen_at = -1, len(num_as_arr)
+        for i in range(len(num_as_arr) - 1, -1, -1):
+            cur_num = num_as_arr[i]
+            num_as_arr[i] = (cur_num, max_seen, max_seen_at)
+
+            if cur_num > max_seen:
+                max_seen = cur_num
+                max_seen_at = i
+        
+        # find the first smallest value and swap it with the rightmost largest value
+        for i in range(len(num_as_arr)):
+            cur_num, max_seen, max_seen_at = num_as_arr[i]
+
+            if cur_num < max_seen:
+                num_as_arr[i], num_as_arr[max_seen_at] = num_as_arr[max_seen_at], num_as_arr[i]
+                break
+        
+        # convert the array back into an integer
+        num = 0
+        for n, _, _ in num_as_arr:
+            num = num * 10 + n
+        
+        return num
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the number, value by value
+
+~~~
+space = O(N) 
+~~~
+number array size
+
 
 ## [680. Valid Palindrome II](https://leetcode.com/problems/valid-palindrome-ii)
 
