@@ -28,6 +28,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [56. Merge Intervals](#56-merge-intervals)
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
+- [129. Sum Root to Leaf Numbers](#129-sum-root-to-leaf-numbers)
 - [133. Clone Graph](#133-clone-graph)
 - [138. Copy List with Random Pointer](#138-copy-list-with-random-pointer)
 - [146. LRU Cache](#146-lru-cache)
@@ -642,6 +643,38 @@ we go through both of the arrays once
 space = O(1) 
 ~~~
 we do the operations in place without extra memory
+
+## [129. Sum Root to Leaf Numbers](https://leetcode.com/problems/sum-root-to-leaf-numbers)
+
+### key idea
+
+really simple just read the code
+
+~~~py
+class Solution:
+    def sumNumbers(self, root: Optional[TreeNode]) -> int:
+        def dfs(node, num):
+            if not node:
+                return 0
+            
+            num = num * 10 + node.val
+            if not node.left and not node.right:
+                return num
+            
+            return dfs(node.left, num) + dfs(node.right, num)
+        
+        return dfs(root, 0)
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole tree
+
+~~~
+space = O(1) or O(height) if recursive stack is counted
+~~~
 
 ## [133. Clone Graph](https://leetcode.com/problems/clone-graph)
 
@@ -1609,6 +1642,10 @@ O(logN) if the tree is balanced, but in the worst case the tree is not balanced,
 
 hasmap and prefix sum
 
+~~~
+prefix[j] % k = prefix[i] % k  (with i < j)
+~~~
+
 store in the hashmap the reminder (key) and index (value), as soon a reminder is found, it means that two prefix sums have the same reminder and the last thing to check is if the length is greater than 1
 
 example: 
@@ -2185,6 +2222,51 @@ build the heap and process every point
 space = O(N) 
 ~~~
 heap takes n points
+
+## [986. Interval List Intersections](https://leetcode.com/problems/interval-list-intersections/description)
+
+### key idea
+
+two pointers
+
+look at example diagram / draw it yourself, then try to come up with all the possibles outcomes and code them out
+
+~~~py
+class Solution:
+    def intervalIntersection(self, firstList: List[List[int]], secondList: List[List[int]]) -> List[List[int]]:
+        if not firstList or not secondList:
+            return []
+            
+        p1, p2 = 0, 0
+        res = []
+
+        while p1 < len(firstList) and p2 < len(secondList):
+            start1, start2 = firstList[p1][0], secondList[p2][0]
+            end1, end2 = firstList[p1][1], secondList[p2][1]
+
+            if start1 > end2: # check if they are disjoint
+                p2 += 1
+            elif start2 > end1:
+                p1 += 1
+            else: # if they are overlapping
+                res.append([max(start1, start2), min(end1, end2)])
+
+                if end1 > end2: # check if there is some processing left
+                    p2 += 1
+                else:
+                    p1 += 1
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N + M)
+~~~
+if both l1.length = N and l2.length = M are of the same size
+
+~~~
+space = O(1) or O(N) if considering the res array
+~~~
 
 ## [1004. Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii)
 
