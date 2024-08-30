@@ -22,7 +22,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [17. Letter Combinations of a Phone Number](#17-letter-combinations-of-a-phone-number)
 - [23. Merge k Sorted Lists](#23-merge-k-sorted-lists)
 - [31. Next Permutation](#31-next-permutation)
-- [33. Search in Rotated Sorted Array](#33-search-in-rotated-array)
+- [33. Search in Rotated Sorted Array](#33-search-in-rotated-sorted-array)
 - [34. Find First and Last Position of Element in Sorted Array](#34-find-first-and-last-position-of-element-in-sorted-array)
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [50. Pow(x,n)](#50-powxn)
