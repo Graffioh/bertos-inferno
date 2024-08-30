@@ -16,6 +16,13 @@ following company specific problems based on frequency
 
 i try solving the question for 30 minutes, then look at the solution until i fully understand it
 
+# Resources
+
+- [neetcode videos](https://www.youtube.com/c/neetcode)
+- [cracking faang solution videos](https://www.youtube.com/@crackfaang)
+- [competitive programming handbook](https://cses.fi/book/book.pdf)
+- [dynamic programming book](https://dp-book.com/Dynamic_Programming.pdf)
+
 # Problems index
 - [14. Longest Common Prefix](#14-longest-common-prefix)
 - [15. 3Sum](#15-3sum)
