@@ -22,6 +22,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [17. Letter Combinations of a Phone Number](#17-letter-combinations-of-a-phone-number)
 - [23. Merge k Sorted Lists](#23-merge-k-sorted-lists)
 - [31. Next Permutation](#31-next-permutation)
+- [33. Search in Rotated Sorted Array](#33-search-in-rotated-array)
 - [34. Find First and Last Position of Element in Sorted Array](#34-find-first-and-last-position-of-element-in-sorted-array)
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [50. Pow(x,n)](#50-powxn)
@@ -44,7 +45,9 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [346. Moving Average from Data Stream](#346-moving-average-from-data-stream-premium--premium) 
 - [347. Top K Frequent Elements](#347-top-k-frequent-elements)
 - [398. Random Pick Index](#398-random-pick-index)
+- [415. Add Strings](#415-add-strings)
 - [426. Convert Binary Search Tree to Sorted Doubly Linked List](#426-convert-binary-search-tree-to-sorted-doubly-linked-list-premium--premium) 
+- [498. Diagonal Traverse](#498-diagonal-traverse)
 - [523. Continuous Subarray Sum](#523-continuous-subarray-sum)
 - [528. Random Pick with Weight](#528-random-pick-with-weight)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
@@ -57,9 +60,11 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [921. Minimum Add to Make Parentheses Valid](#921-minimum-add-to-make-parentheses-valid)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
+- [986. Interval List Intersections](#986-interval-list-intersections)
 - [1004. Max Consecutive Ones III](#1004-max-consecutive-ones-iii)
 - [1091. Shortest Path in Binary Matrix](#1091-shortest-path-in-binary-matrix)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
+- [1539. Kth Missing Positive Number](#1539-kth-missing-positive-number)
 - [1570. Dot Product of Two Sparse Vectors](#1570-dot-product-of-two-sparse-vectors-premium--premium)
 - [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
@@ -324,6 +329,50 @@ in the worst case the for loop finishes, so full iteration + reversing
 space = O(1)
 ~~~
 all done in-place, baby :*
+
+## [33. Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array)
+
+### key idea
+
+binary search ofc
+
+since we know that the array was sorted before, that means that there should be a pivot that splits the array in two sorted parts
+
+play around that pivot and find the target
+
+~~~py
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        l, r = 0, len(nums) - 1
+
+        while l <= r:
+            mid = (l + r) // 2
+
+            if nums[mid] == target:
+                return mid
+            elif nums[mid] >= nums[l]:
+                if nums[l] <= target < nums[mid]:
+                    r = mid - 1
+                else:
+                    l = mid + 1
+            else:
+                if nums[mid] < target <= nums[r]:
+                    l = mid + 1
+                else:
+                    r = mid - 1
+        return -1
+~~~
+
+**complexity**
+~~~
+time = O(logN)
+~~~
+binary search
+
+~~~
+space = O(1)
+~~~
+all done in-place
 
 ## [34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/description)
 
@@ -1577,6 +1626,49 @@ no extra memory used
 
 - [reservoir sampling article](https://florian.github.io/reservoir-sampling/)
 
+## [415. Add Strings](https://leetcode.com/problems/add-strings/description)
+
+### key idea
+
+nothing to say other than i'm so bad
+
+~~~py
+class Solution:
+    def addStrings(self, num1: str, num2: str) -> str:
+        res = deque()
+        i = len(num1) - 1
+        j = len(num2) - 1
+
+        carry = 0
+        while i >= 0 or j >= 0:
+            cur_i = int(num1[i]) if i >= 0 else 0
+            cur_j = int(num2[j]) if j >= 0 else 0
+
+            cur_sum = carry + cur_i + cur_j
+
+            res.appendleft(str(cur_sum % 10))
+
+            carry = cur_sum // 10
+
+            i -= 1
+            j -= 1
+        
+        if carry:
+            res.appendleft(str(carry))
+        
+        return "".join(res)
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+in the worst case len(num1) == len(num2) -> N + M -> N
+
+~~~
+space = O(1) or O(N) if we count result array 
+~~~
+
 ## 426. Convert Binary Search Tree to Sorted Doubly Linked List [(premium)](https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/description/) | [('premium')](https://www.lintcode.com/problem/1534/)
 
 ### key idea
@@ -1635,6 +1727,69 @@ we go through the whole tree where n is the tree size
 space = O(N) 
 ~~~
 O(logN) if the tree is balanced, but in the worst case the tree is not balanced, so N is the size of recursive call stack
+
+## [498. Diagonal Traverse](https://leetcode.com/problems/diagonal-traverse/description)
+
+### key idea
+
+here we need to follow the flow that the description suggested us
+
+be careful with out of bounds
+
+keep track if you are going up or down
+
+~~~py
+class Solution:
+    def findDiagonalOrder(self, mat: List[List[int]]) -> List[int]:
+        row_length = len(mat)
+        col_length = len(mat[0])
+        res = []
+
+        is_going_up = True
+        cur_i = cur_j = 0
+ 
+        while len(res) != row_length * col_length:
+            if is_going_up:
+                while cur_i >= 0 and cur_j < col_length:
+                    res.append(mat[cur_i][cur_j])
+                
+                    cur_i -= 1
+                    cur_j += 1
+                
+                if cur_j == col_length:
+                    cur_i += 2
+                    cur_j -= 1
+                else:
+                    cur_i += 1
+                
+                is_going_up = False
+            else:
+                while cur_i < row_length and cur_j >= 0:
+                    res.append(mat[cur_i][cur_j])
+                
+                    cur_i += 1
+                    cur_j -= 1
+
+                if cur_i == row_length:
+                    cur_i -= 1
+                    cur_j += 2
+                else:
+                    cur_j += 1
+
+                is_going_up = True
+                
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N * M) 
+~~~
+we process each element of the matrix
+
+~~~
+space = O(1) or O(N) if res is counted
+~~~
 
 ## [523. Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)
 
@@ -2409,6 +2564,49 @@ two indipendent iterations that goes only through all the elements of the string
 space = O(N) 
 ~~~
 res/filtered size is at most n
+
+## [1539. Kth Missing Positive Number](https://leetcode.com/problems/kth-missing-positive-number/description)
+
+### key idea
+
+we will use a binary search on indexes to find the missing number in an efficient way
+
+by doing arr[i] - i we can get the numbers of missing numbers up till that point
+
+so with this information we can find where the missing number should be in O(logN) time thanks to binary search
+
+to clarify better this concept just watch the video in the resources
+
+~~~py
+class Solution:
+    def findKthPositive(self, arr: List[int], k: int) -> int:
+        l, r = 0, len(arr) - 1
+
+        while l <= r:
+            mid = (l + r) // 2
+
+            if arr[mid] - mid - 1 < k:
+                l = mid + 1
+            else:
+                r = mid - 1
+        
+        return l + k
+~~~
+
+**complexity**
+~~~
+time = O(logN) 
+~~~
+binary searchhhh
+
+~~~
+space = O(1) 
+~~~
+no extra memory
+
+### resources
+
+- [explanation video](https://www.youtube.com/watch?v=NObPmjZIh8Y)
 
 ## 1570. Dot Product of Two Sparse Vectors [(premium)](https://leetcode.com/problems/dot-product-of-two-sparse-vectors/description) | [('premium')](https://www.lintcode.com/problem/3691/)
 
