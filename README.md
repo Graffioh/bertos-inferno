@@ -18,12 +18,13 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 
 # Resources
 
-- [neetcode videos](https://www.youtube.com/c/neetcode)
-- [cracking faang solution videos](https://www.youtube.com/@crackfaang)
+- [neetcode](https://www.youtube.com/c/neetcode)
+- [cracking faang](https://www.youtube.com/@crackfaang)
 - [competitive programming handbook](https://cses.fi/book/book.pdf)
 - [dynamic programming book](https://dp-book.com/Dynamic_Programming.pdf)
 
 # Problems index
+- [7. Reverse Integer](#7-reverse-integer)
 - [14. Longest Common Prefix](#14-longest-common-prefix)
 - [15. 3Sum](#15-3sum)
 - [17. Letter Combinations of a Phone Number](#17-letter-combinations-of-a-phone-number)
@@ -77,6 +78,52 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
 
 ---
+
+## [7. Reverse Integer](https://leetcode.com/problems/reverse-integer)
+
+### key idea
+
+use % (to pick the last digit) and / (to remove the last digit)
+
+by picking the last digit each iteration, you can add that to the result and this will give us the reversed integer
+
+each iteration should remove one digit so when no more digits are left, the loop ends
+
+the two ifs are used to check for overflows
+
+~~~py
+class Solution:
+    def reverse(self, x: int) -> int:
+        MAX = 2147483647
+        MIN = -2147483648
+        res = 0
+
+        while x:
+            digit = int(math.fmod(x, 10))
+            x = int(x / 10)
+
+            if res // 10 > MAX or res // 10 == MAX and digit % 10 >= MAX:
+                return 0
+
+            if res // 10 < MIN or res // 10 == MIN and digit % 10 <= MIN:
+                return 0
+            
+            res = (res * 10) + digit
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N)
+~~~
+process the whole number
+
+~~~
+space = O(1)
+~~~
+no extra space used
+
 
 ## [14. Longest Common Prefix](https://leetcode.com/problems/longest-common-prefix)
 
