@@ -2107,7 +2107,7 @@ we only use pointers
 
 ### key idea
 
-the intuition is simple, just find the leftmost smallest value with on his right the rightmost largest value
+so basically the idea is to search the rightmost gratest value (so from right to left) and swap this value with the first leftmost smallest value (from left to right)
 
 the code is a little tricky but it's fun because we are parsing back and forth the number
 
