@@ -102,10 +102,10 @@ class Solution:
             digit = int(math.fmod(x, 10))
             x = int(x / 10)
 
-            if res // 10 > MAX or res // 10 == MAX and digit % 10 >= MAX:
+            if res > MAX // 10 or res == MAX // 10 and digit >= MAX % 10:
                 return 0
 
-            if res // 10 < MIN or res // 10 == MIN and digit % 10 <= MIN:
+            if res < MIN // 10 or res == MIN // 10 and digit <= MIN % 10:
                 return 0
             
             res = (res * 10) + digit
