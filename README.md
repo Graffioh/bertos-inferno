@@ -58,9 +58,11 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [426. Convert Binary Search Tree to Sorted Doubly Linked List](#426-convert-binary-search-tree-to-sorted-doubly-linked-list-premium--premium) 
 - [498. Diagonal Traverse](#498-diagonal-traverse)
 - [523. Continuous Subarray Sum](#523-continuous-subarray-sum)
+- [525. Contiguous Array](#525-contiguous-array)
 - [528. Random Pick with Weight](#528-random-pick-with-weight)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
 - [560. Subarray Sum Equals K](#560-subarray-sum-equals-k)
+- [636. Exclusive Time of Functions](#636-exclusive-time-of-functions)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [670. Maximum Swap](#670-maximum-swap)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
@@ -1948,6 +1950,49 @@ space = O(N)
 ~~~
 hash map size
 
+## [525. Contiguous Array](https://leetcode.com/problems/contiguous-array)
+
+### key idea
+
+count increment/decrement if we see a 1/0
+
+store the count in a dictionary count:index
+
+compute the difference between the current index and the dictionary count index
+
+~~~py
+class Solution:
+    def findMaxLength(self, nums: List[int]) -> int:
+        count_dict = defaultdict(int)
+        count_dict[0] = -1
+        count = 0
+        res = 0
+
+        for i, n in enumerate(nums):
+            if n == 0:
+                count -= 1
+            else:
+                count += 1
+
+            if count in count_dict:
+                res = max(res, i - count_dict[count])
+            else:
+                count_dict[count] = i
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+in the worst case all the array is the maximum contiguous array
+
+~~~
+space = O(N) 
+~~~
+dictionary size
+
 ## [528. Random Pick with Weight]()
 
 ### key idea
@@ -2104,6 +2149,56 @@ we iterate the whole array nums
 space = O(N) 
 ~~~
 for the hashmap
+
+## [636. Exclusive Time of Functions](https://leetcode.com/problems/exclusive-time-of-functions)
+
+### key idea
+
+as the problem suggest, use a stack
+
+keep track of the execution times using a simple array and indexing by id
+
+compute the delta between the previous time and the current time
+
+remember that the end time is inclusive so '+ 1' is needed
+
+~~~py
+class Solution:
+    def exclusiveTime(self, n: int, logs: List[str]) -> List[int]:
+        stk = []
+        exec_times = [0] * n
+        prev_time = 0
+
+        for l in logs:
+            log_id, log_startend, log_time = l.split(":")
+
+            log_id = int(log_id)
+            log_time = int(log_time)
+
+            if log_startend == "end":
+                exec_times[stk.pop()] += (log_time - prev_time) + 1
+
+                prev_time = log_time + 1
+            else:
+                if stk:
+                    exec_times[stk[-1]] += (log_time - prev_time)
+
+                stk.append(log_id)
+                prev_time = log_time
+        
+        return exec_times
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole logs
+
+~~~
+space = O(N) 
+~~~
+stack/array space
 
 ## 637. Valid Word Abbreviation [(premium)](https://leetcode.com/problems/valid-word-abbreviation/description) | [('premium')](https://www.lintcode.com/problem/637/)
 
