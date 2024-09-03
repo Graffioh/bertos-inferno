@@ -24,6 +24,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [dynamic programming book](https://dp-book.com/Dynamic_Programming.pdf)
 
 # Problems index
+- [5. Longest Palindromic Substring](#5-longest-palindromic-substring)
 - [7. Reverse Integer](#7-reverse-integer)
 - [14. Longest Common Prefix](#14-longest-common-prefix)
 - [15. 3Sum](#15-3sum)
@@ -63,6 +64,8 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [670. Maximum Swap](#670-maximum-swap)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
+- [708. Insert into a Sorted Circular Linked List](#708-insert-into-a-sorted-circular-linked-list)
+- [721. Accounts Merge](#721-accounts-merge)
 - [791. Custom Sort String](#791-custom-sort-string)
 - [827. Making A Large Island](#827-making-a-large-island)
 - [921. Minimum Add to Make Parentheses Valid](#921-minimum-add-to-make-parentheses-valid)
@@ -78,6 +81,51 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
 
 ---
+
+## [5. Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring)
+
+### key idea
+
+each letter is a different center, from the center we expand to the right and to the left to check the palindrome
+
+for each iteration, check if the new palindrome length is greater the the previous one
+
+~~~py
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        res = ""
+        length = 0
+
+        for i in range(len(s)):
+            l, r = i, i
+            while l >= 0 and r < len(s) and s[l] == s[r]:
+                if (r - l + 1) > length:
+                    res = s[l:r+1]
+                    length = r - l + 1
+                l -= 1
+                r += 1
+
+            l, r = i, i + 1
+            while l >= 0 and r < len(s) and s[l] == s[r]:
+                if (r - l + 1) > length:
+                    res = s[l:r+1]
+                    length = r - l + 1
+                l -= 1
+                r += 1
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N)
+~~~
+process the whole string
+
+~~~
+space = O(1)
+~~~
+no extra space used
 
 ## [7. Reverse Integer](https://leetcode.com/problems/reverse-integer)
 
@@ -2206,6 +2254,120 @@ for skipLeft/skipRight
 we can optimize this problem by eliminating skipLeft/skipRight and reversing
 
 by using only pointers
+
+## [708. Insert into a Sorted Circular Linked List](https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list)
+
+### key idea
+
+we must take in account 3 cases:
+
+1) head is null *(create the new node and link it to himself)*
+2) the node needs to be inserted between prev and next *(as soon as the node value is in between prev and next)*
+3) the node needs to be inserted after the tail *(whenever cur.val > cur.next.val we got to the tail)*
+
+~~~py
+class Solution:
+    def insert(self, head: 'Optional[Node]', insertVal: int) -> 'Node':
+        if not head:
+            new_node = Node(insertVal, None)
+            new_node.next = new_node
+            return new_node
+
+        cur = head
+
+        while cur.next != head:
+            if cur.val <= insertVal <= cur.next.val:
+                new_node = Node(insertVal, cur.next)
+                cur.next = new_node
+                return head
+            elif cur.val > cur.next.val: # tail
+                if insertVal >= cur.val or insertVal <= cur.next.val:
+                    new_node = Node(insertVal, cur.next)
+                    cur.next = new_node
+                    return head
+            
+            cur = cur.next
+        
+        new_node = Node(insertVal, cur.next)
+        cur.next = new_node
+
+        return head
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole linked list
+
+~~~
+space = O(1) 
+~~~
+no extra memory used
+
+## [721. Accounts Merge](https://leetcode.com/problems/accounts-merge/description)
+
+### key idea
+
+graph problem
+
+make connections between emails of the same account (for efficiency connect everything to the first email)
+
+then to merge the accounts we just traverse the graph
+
+remember to:
+
+- keep a mapping email -> name for the result
+- sort the emails from the traversal
+
+~~~py
+class Solution:
+    def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        graph = defaultdict(set)
+        email_to_name = {}
+
+        for acc in accounts:
+            name = acc[0]
+
+            for email in acc[1:]:
+                graph[email].add(acc[1])
+                graph[acc[1]].add(email)
+
+                email_to_name[email] = name
+        
+        visited = set()
+        res = []
+
+        def dfs(node, local_res):
+            visited.add(node)
+
+            local_res.append(node)
+
+            for adj in graph[node]:
+                if adj not in visited:
+                    dfs(adj, local_res)
+        
+        for src in list(graph):
+            if src not in visited:
+                local_res = []
+                dfs(src, local_res)
+                res.append([email_to_name[src]] + sorted(local_res))
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(NKlogNK) 
+~~~
+n number of accounts and k maximum length of an account
+
+in the worst case all email belongs to a single person + there is sorting
+
+~~~
+space = O(NK) 
+~~~
+graph size, visited size, recursive call stack size, map size
 
 ## [791. Custom Sort String](https://leetcode.com/problems/custom-sort-string)
 
