@@ -73,6 +73,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [827. Making A Large Island](#827-making-a-large-island)
 - [921. Minimum Add to Make Parentheses Valid](#921-minimum-add-to-make-parentheses-valid)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
+- [953. Verifying an Alien Dictionary](#953-verifying-an-alien-dictionary)
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
 - [986. Interval List Intersections](#986-interval-list-intersections)
 - [1004. Max Consecutive Ones III](#1004-max-consecutive-ones-iii)
@@ -82,6 +83,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [1570. Dot Product of Two Sparse Vectors](#1570-dot-product-of-two-sparse-vectors-premium--premium)
 - [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
+- [1868. Product of Two Run Length Encoded Arrays](#1868-product-of-two-run-length-encoded-arrays-premium--premium) 
 
 ---
 
@@ -2700,6 +2702,51 @@ space = O(N)
 ~~~
 recursive call stack size since in the worst case we recurse n times (how many nodes there are)
 
+## [953. Verifying an Alien Dictionary](https://leetcode.com/problems/verifying-an-alien-dictionary)
+
+### key idea
+
+create an order dictionary that stores order_char : order_index
+
+that way we can check if for each word, some word is in the wrong order
+
+compare the words pairwise and for each pair, check if they are in the correct order
+
+~~~py
+class Solution:
+    def isAlienSorted(self, words: List[str], order: str) -> bool:
+        order_dict = {char : i for i, char in enumerate(order)}
+
+        def are_words_ordered(word1, word2):
+            for i in range(min(len(word1), len(word2))):
+                if word1[i] != word2[i]:
+                    if order_dict[word1[i]] > order_dict[word2[i]]:
+                        return False
+                    else:
+                        return True
+            
+            return len(word1) <= len(word2)
+
+        for word1, word2 in zip(words, words[1:]):
+            if not are_words_ordered(word1, word2):
+                return False
+
+            return True
+~~~
+
+**complexity**
+~~~
+time = O(26 + 100) -> O(1)
+~~~
+to construct the dictionary it take O(26) cause there are 26 letters in order
+
+words.length <= 100
+
+~~~
+space = O(1) 
+~~~
+same as time complexity
+
 ## [973. K Closest Points to Origin]()
 
 ### key idea
@@ -3128,3 +3175,59 @@ same as before
 space = O(N) 
 ~~~
 same as before
+
+## 1868. Product of Two Run Length Encoded Arrays [(premium)](https://leetcode.com/problems/product-of-two-run-length-encoded-arrays) | [('premium')](https://www.lintcode.com/problem/3730/)
+
+### key ide
+
+the idea is to process 'in place' the product without creating extra arrays, using two pointers
+
+if the last appended product in res is still the current product processed, then increment its relative frequency since we want the most optimized run-length algorithm
+
+move the pointers accordingly based on the minimum frequency
+
+~~~py
+class Solution:
+    def findRLEArray(self, encoded1: List[List[int]], encoded2: List[List[int]]) -> List[List[int]]:
+        p1 = p2 = 0
+        res = []
+
+        while p1 < len(encoded1) and p2 < len(encoded2):
+            num1, count1 = encoded1[p1]
+            num2, count2 = encoded2[p2]
+
+            prod = num1 * num2
+            freq = min(count1, count2)
+
+            if not res or prod != res[-1][0]:
+                res.append([prod, freq])
+            else:
+                res[-1][1] += freq # add the frequency and optimize the run-length encoded array
+            
+            # consume the used counts
+            encoded1[p1][1] -= freq
+            encoded2[p2][1] -= freq
+
+            # increment based on the smallest counter
+            if count1 == freq:
+                p1 += 1
+            if count2 == freq:
+                p2 += 1
+                
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N + M) 
+~~~
+N = encoded1 length
+
+M =  encoded2 length
+
+we iterate through encoded1 and encoded2
+
+~~~
+space = O(N + M) 
+~~~
+same as time complexity
