@@ -64,6 +64,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [560. Subarray Sum Equals K](#560-subarray-sum-equals-k)
 - [636. Exclusive Time of Functions](#636-exclusive-time-of-functions)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
+- [647. Palindromic Substrings](#647-palindromic-substrings)
 - [670. Maximum Swap](#670-maximum-swap)
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [708. Insert into a Sorted Circular Linked List](#708-insert-into-a-sorted-circular-linked-list)
@@ -90,7 +91,9 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 
 each letter is a different center, from the center we expand to the right and to the left to check the palindrome
 
-for each iteration, check if the new palindrome length is greater the the previous one
+check first odd lengt then even length palindrome
+
+for each iteration, calculate the max length
 
 ~~~py
 class Solution:
@@ -99,6 +102,7 @@ class Solution:
         length = 0
 
         for i in range(len(s)):
+            # odd length palindrome
             l, r = i, i
             while l >= 0 and r < len(s) and s[l] == s[r]:
                 if (r - l + 1) > length:
@@ -107,6 +111,7 @@ class Solution:
                 l -= 1
                 r += 1
 
+            # even length palindrome
             l, r = i, i + 1
             while l >= 0 and r < len(s) and s[l] == s[r]:
                 if (r - l + 1) > length:
@@ -2245,6 +2250,44 @@ both word and abbr are of size n
 space = O(1) 
 ~~~
 we only use pointers
+
+## [647. Palindromic Substrings](https://leetcode.com/problems/palindromic-substrings)
+
+### key idea
+
+same as [5. Longest Palindromic Substring](#5-longest-palindromic-substring) but instead of calculating the result, just increase the count
+
+~~~py
+class Solution:
+    def countSubstrings(self, s: str) -> int:
+        count = 0
+        
+        for i in range(len(s)):
+            count += self.count_palindromes(s, i, i)
+            count += self.count_palindromes(s, i, i+1)
+
+        return count
+    
+    def count_palindromes(self, s, l, r):
+            count = 0
+            while l >= 0 and r < len(s) and s[l] == s[r]:
+                l -= 1
+                r += 1
+                count += 1
+
+            return count
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole string
+
+~~~
+space = O(1) 
+~~~
+no extra space used
 
 ## [670. Maximum Swap](https://leetcode.com/problems/maximum-swap)
 
