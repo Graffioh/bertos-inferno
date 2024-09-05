@@ -16,6 +16,10 @@ following company specific problems based on frequency
 
 i try solving the question for 30 minutes, then look at the solution until i fully understand it
 
+# Anki
+
+- [download deck](https://ankiweb.net/shared/info/1983665439?cb=1725474892013)
+
 # Resources
 
 - [neetcode](https://www.youtube.com/c/neetcode)
