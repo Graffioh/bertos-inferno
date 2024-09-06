@@ -49,8 +49,9 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [162. Find Peak Element](#162-find-peak-element)
 - [199. Binary Tree Right Side View](#199-binary-tree-right-side-view)
 - [207. Course Schedule](#207-course-schedule)
-- [227. Basic Calculator II](#227-basic-calculator-ii)
+- [210. Course Schedule II](#210-course-schedule-ii)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
+- [227. Basic Calculator II](#227-basic-calculator-ii)
 - [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
@@ -73,6 +74,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [680. Valid Palindrome II](#680-valid-palindrome-ii)
 - [708. Insert into a Sorted Circular Linked List](#708-insert-into-a-sorted-circular-linked-list)
 - [721. Accounts Merge](#721-accounts-merge)
+- [767. Reorganize String](#767-reorganize-string)
 - [791. Custom Sort String](#791-custom-sort-string)
 - [827. Making A Large Island](#827-making-a-large-island)
 - [921. Minimum Add to Make Parentheses Valid](#921-minimum-add-to-make-parentheses-valid)
@@ -80,6 +82,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [953. Verifying an Alien Dictionary](#953-verifying-an-alien-dictionary)
 - [973. K Closest Points to Origin](#973-k-closest-points-to-origin)
 - [986. Interval List Intersections](#986-interval-list-intersections)
+- [994. Rotting Oranges](#994-rotting-oranges)
 - [1004. Max Consecutive Ones III](#1004-max-consecutive-ones-iii)
 - [1091. Shortest Path in Binary Matrix](#1091-shortest-path-in-binary-matrix)
 - [1249. Minimum Remove to Make Valid Parentheses](#1249-minimum-remove-to-make-valid-parentheses)
@@ -758,6 +761,47 @@ space = O(N)
 ~~~
 in the worst case all the intervals are disjoint (no overlap) so |res| = |intervals|
 
+## [71. Simplify Path](https://leetcode.com/problems/simplify-path)
+
+### key idea
+the only relevant special character for this problem is ".."
+
+use a stack for storing words, whenever ".." is encountered if there are words in the stack, pop
+
+for "" and "." just continue the iteration cause we just skip them
+
+at the end we join all the words from the stack by separating them with "/"
+
+~~~py
+class Solution:
+    def simplifyPath(self, path: str) -> str:
+        words_stk = []
+        items = path.split("/")
+
+        for item in items:
+            if item == "" or item == ".":
+                continue
+            
+            if item == "..":
+                if words_stk:
+                    words_stk.pop()
+            else:
+                words_stk.append(item)
+        
+        return "/" + "/".join(words_stk)
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through all the path of size n
+
+~~~
+space = O(N) 
+~~~
+we store words from the path in the stack
+
 ## [88. Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array)
 
 ## key idea
@@ -1168,6 +1212,60 @@ space = O(V)
 ~~~
 graph size, number of vertices
 
+## [210. Course Schedule II](https://leetcode.com/problems/course-schedule-ii)
+
+### key idea
+
+same as course schedule, but here we must return a list based on the path of dfs visit
+
+if there is a loop, return an empty list
+
+~~~py
+class Solution:
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        res = []
+        graph = {i: [] for i in range(numCourses)}
+        visited = [0] * numCourses
+
+        for src, dst in prerequisites:
+            graph[src].append(dst)
+        
+        def dfs(node, check):
+            visited[node] = 1
+
+            for adj in graph[node]:
+                if visited[adj] == 1:
+                    return True
+
+                if visited[adj] == 0:
+                    check = dfs(adj, check)
+                    if check == True:
+                        return True
+            
+            if visited[node] != 2:
+                res.append(node)
+            visited[node] = 2
+        
+        for src in list(graph):
+            if visited[src] == 0:
+                check = dfs(src, False)
+                if check == True:
+                    return []
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(V + E) 
+~~~
+typical graph dfs complexity, we go through all edges and pass through all vertices in the worst case -> we traverse the whole graph
+
+~~~
+space = O(V) 
+~~~
+graph size, number of vertices
+
 ## [215. Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/description)
 
 ### key idea
@@ -1224,47 +1322,6 @@ for the heap size
 ### optimization
 
 quickselect (TO DO)
-
-## [71. Simplify Path](https://leetcode.com/problems/simplify-path)
-
-### key idea
-the only relevant special character for this problem is ".."
-
-use a stack for storing words, whenever ".." is encountered if there are words in the stack, pop
-
-for "" and "." just continue the iteration cause we just skip them
-
-at the end we join all the words from the stack by separating them with "/"
-
-~~~py
-class Solution:
-    def simplifyPath(self, path: str) -> str:
-        words_stk = []
-        items = path.split("/")
-
-        for item in items:
-            if item == "" or item == ".":
-                continue
-            
-            if item == "..":
-                if words_stk:
-                    words_stk.pop()
-            else:
-                words_stk.append(item)
-        
-        return "/" + "/".join(words_stk)
-~~~
-
-**complexity**
-~~~
-time = O(N) 
-~~~
-we go through all the path of size n
-
-~~~
-space = O(N) 
-~~~
-we store words from the path in the stack
 
 ## [227. Basic Calculator II](https://leetcode.com/problems/basic-calculator-ii/description)
 
@@ -2513,6 +2570,55 @@ space = O(NK)
 ~~~
 graph size, visited size, recursive call stack size, map size
 
+## [767. Reorganize String](https://leetcode.com/problems/reorganize-string)
+
+### key idea
+
+use an hashmap to count letters
+
+for each iteration, at the start always pick the letter with the greatest count then pick the other letters accordingly
+
+to pick the greatest we gonna use a max heap instead of iterating the hashmap
+
+~~~py
+class Solution:
+    def reorganizeString(self, s: str) -> str:
+        count = Counter(s)
+        max_heap = [[-cnt, char] for char, cnt in count.items()]
+
+        prev = None
+        res = ""
+
+        while max_heap or prev:
+            if not max_heap and prev:
+                return ""
+
+            cnt, char = heappop(max_heap)
+            res += char
+            cnt += 1
+
+            if prev:
+                heappush(max_heap, prev)
+                prev = None
+
+            if cnt != 0:
+                prev = [cnt, char]
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(NlogN) 
+~~~
+heap operations
+
+~~~
+space = O(N) 
+~~~
+we store the whole string in the heap
+
+
 ## [791. Custom Sort String](https://leetcode.com/problems/custom-sort-string)
 
 ### key idea
@@ -2827,6 +2933,59 @@ if both l1.length = N and l2.length = M are of the same size
 ~~~
 space = O(1) or O(N) if considering the res array
 ~~~
+
+## [994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges)
+
+### key idea
+
+bfs, keep count of the fresh oranges, push in the queue rotten oranges
+
+that's it
+
+~~~py
+class Solution:
+    def orangesRotting(self, grid: List[List[int]]) -> int:
+        q = deque()
+        directions = [(1,0), (0,1), (-1,0), (0,-1)]
+        time = fresh = 0
+
+        row_length = len(grid)
+        col_length = len(grid[0])
+        for i in range(row_length):
+            for j in range(col_length):
+                if grid[i][j] == 1:
+                    fresh += 1
+                if grid[i][j] == 2:
+                    q.append([i, j])
+        
+        while q and fresh > 0:
+            cur_q_len = len(q)
+            for _ in range(cur_q_len):
+                cur_i, cur_j = q.popleft()
+
+                for i_inc, j_inc in directions:
+                    new_i = cur_i + i_inc
+                    new_j = cur_j + j_inc
+
+                    if 0 <= new_i < row_length and 0 <= new_j < col_length and grid[new_i][new_j] == 1:
+                        grid[new_i][new_j] = 2
+                        q.append([new_i, new_j])
+                        fresh -= 1
+            time += 1
+        
+        return time if fresh == 0 else -1
+~~~
+
+**complexity**
+~~~
+time = O(M * N)
+~~~
+iteration throught the whole matrix
+
+~~~
+space = O(M * N)
+~~~
+the queue in the worst case will be the whole matrix
 
 ## [1004. Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii)
 
