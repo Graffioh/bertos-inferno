@@ -26,6 +26,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [cracking faang](https://www.youtube.com/@crackfaang)
 - [competitive programming handbook](https://cses.fi/book/book.pdf)
 - [dynamic programming book](https://dp-book.com/Dynamic_Programming.pdf)
+- [snats xeet](https://x.com/snats_xyz/status/1832178008578224551)
 
 # Problems index
 - [5. Longest Palindromic Substring](#5-longest-palindromic-substring)
@@ -2634,18 +2635,17 @@ the code is pretty self explanatory
 ~~~py
 class Solution:
     def customSortString(self, order: str, s: str) -> str:
-        counter = collections.Counter(s)
-        res = []
+        map_char_count = Counter(s)
+        res = ""
 
-        for c in order:
-            if c in counter:
-                res.extend([c] * counter[c])
-                del counter[c]
+        for o in order:
+            res += (o * map_char_count[o])
+            del map_char_count[o]
         
-        for c, n in counter.items():
-                res.extend([c] * n)
+        for char, count in map_char_count.items():
+            res += (char * count)
         
-        return "".join(res)
+        return res
 ~~~
 
 **complexity**
