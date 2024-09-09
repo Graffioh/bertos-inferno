@@ -78,6 +78,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [767. Reorganize String](#767-reorganize-string)
 - [791. Custom Sort String](#791-custom-sort-string)
 - [827. Making A Large Island](#827-making-a-large-island)
+- [875. Koko Eating Bananas](#875-koko-eating-bananas)
 - [921. Minimum Add to Make Parentheses Valid](#921-minimum-add-to-make-parentheses-valid)
 - [938. Range Sum of BST](#938-range-sum-of-bst)
 - [953. Verifying an Alien Dictionary](#953-verifying-an-alien-dictionary)
@@ -92,6 +93,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [1650. Lowest Common Ancestor of a Binary Tree III](#1650-lowest-common-ancestor-of-a-binary-tree-iii-premium)
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
 - [1868. Product of Two Run Length Encoded Arrays](#1868-product-of-two-run-length-encoded-arrays-premium--premium) 
+- [2055. Plates Between Candles](#2055-plates-between-candles)
 
 ---
 
@@ -2235,27 +2237,25 @@ remember that the end time is inclusive so '+ 1' is needed
 class Solution:
     def exclusiveTime(self, n: int, logs: List[str]) -> List[int]:
         stk = []
-        exec_times = [0] * n
+        res = [0] * n
         prev_time = 0
 
         for l in logs:
             log_id, log_startend, log_time = l.split(":")
-
             log_id = int(log_id)
             log_time = int(log_time)
 
-            if log_startend == "end":
-                exec_times[stk.pop()] += (log_time - prev_time) + 1
-
-                prev_time = log_time + 1
-            else:
+            if log_startend == "start":
                 if stk:
-                    exec_times[stk[-1]] += (log_time - prev_time)
-
+                    res[stk[-1]] += log_time - prev_time
+                
                 stk.append(log_id)
                 prev_time = log_time
+            else:
+                res[stk.pop()] += (log_time - prev_time) + 1
+                prev_time = log_time + 1
         
-        return exec_times
+        return res
 ~~~
 
 **complexity**
@@ -2737,6 +2737,57 @@ N * N size of the matrix, so it's the iterations through all the matrix
 space = O(N^2 / 2) 
 ~~~
 this is the worst case if the matrix is half 0 and half 1
+
+## [875. Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas)
+
+### key idea
+
+create a range and search through it
+
+the minimum banana that koko can eat is 1, and the maximum is the maximum value of the piles
+
+now we need something to search between this range, and check whetever we find a valid value that will make koko eat n bananas in exactly h hours
+
+usually when we talk of searching in a sorted array for a **specific condition** we do a binary search with the caveaut that it will run **while l < r** and we'll **return the left pointer** as our result
+
+~~~py
+class Solution:
+    def minEatingSpeed(self, piles: List[int], h: int) -> int:
+        l = 1
+        r = max(piles)
+
+        def can_eat(speed):
+            hours = 0
+
+            for p in piles:
+                if speed > p:
+                    hours += 1
+                else:
+                    hours += math.ceil(p / speed)
+            
+            return hours <= h
+
+        while l < r:
+            mid = (l + r) // 2
+
+            if not can_eat(mid):
+                l = mid + 1
+            else:
+                r = mid
+
+        return l
+~~~
+
+**complexity**
+~~~
+time = O(NlogN) 
+~~~
+for each binary search we execute can_eat that takes n time
+
+~~~
+space = O(1) 
+~~~
+no extra space used
 
 ## [921. Minimum Add to Make Parentheses Valid](https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description)
 
@@ -3394,3 +3445,62 @@ we iterate through encoded1 and encoded2
 space = O(N + M) 
 ~~~
 same as time complexity
+
+## [2055. Plates Between Candles](https://leetcode.com/problems/plates-between-candles/)
+
+### key idea
+
+prefix sum to count the plates ("*")
+
+left and right candles ("|") array to keep track of first candle position to the left and to the right
+
+to calculate the result just use the property of the prefix sum to get the number of candles between the two candles by doing the difference
+
+there is an edge case where start will be after the end position, in that case return 0 and it means that there are no candles
+
+~~~py
+class Solution:
+    def platesBetweenCandles(self, s: str, queries: List[List[int]]) -> List[int]:
+        prefix_sum = [0] * len(s)
+        right_candles = [0] * len(s)
+        left_candles = [0] * len(s)
+
+        # calculate candles prefix_sum
+        prefix_sum[0] = 1 if s[0] == "*" else 0
+        for i in range(1, len(s)):
+            prefix_sum[i] = prefix_sum[i - 1] + (1 if s[i] == "*" else 0)
+
+        # calculate left candles positions
+        left_candles[0] = 0 if s[0] == "|" else -1
+        for i in range(1, len(s)):
+            left_candles[i] = i if s[i] == "|" else left_candles[i - 1]
+
+        # calculate right candles positions
+        right_candles[len(s) - 1] = len(s) - 1 if s[len(s) - 1] == "|" else len(s)
+        for i in range(len(s) - 2, -1, -1):
+            right_candles[i] = i if s[i] == "|" else right_candles[i + 1]
+
+        # calculate the result based on the queries
+        res = [0] * len(queries)
+        for i in range(len(queries)):
+            start = right_candles[queries[i][0]]
+            end = left_candles[queries[i][1]]
+
+            res[i] = 0 if start >= end else prefix_sum[end] - prefix_sum[start]
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we iterate through the whole string 
+
+~~~
+space = O(N) 
+~~~
+len(s) = n
+
+prefix_sum and right/left candles are of size n
+
