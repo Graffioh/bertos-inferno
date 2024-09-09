@@ -24,6 +24,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 
 - [neetcode](https://www.youtube.com/c/neetcode)
 - [cracking faang](https://www.youtube.com/@crackfaang)
+- [code with carter](https://www.youtube.com/@codewithcarter)
 - [competitive programming handbook](https://cses.fi/book/book.pdf)
 - [dynamic programming book](https://dp-book.com/Dynamic_Programming.pdf)
 - [snats xeet](https://x.com/snats_xyz/status/1832178008578224551)
@@ -40,6 +41,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [34. Find First and Last Position of Element in Sorted Array](#34-find-first-and-last-position-of-element-in-sorted-array)
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [50. Pow(x,n)](#50-powxn)
+- [54. Spiral Matrix](#54-spiral-matrix)
 - [56. Merge Intervals](#56-merge-intervals)
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
@@ -94,6 +96,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [1762. Buildings With an Ocean View](#1762-buildings-with-an-ocean-view-premium)
 - [1868. Product of Two Run Length Encoded Arrays](#1868-product-of-two-run-length-encoded-arrays-premium--premium) 
 - [2055. Plates Between Candles](#2055-plates-between-candles)
+- [2340. Minimum Adjacent Swaps to Make a Valid Array](#2340-minimum-adjacent-swaps-to-make-a-valid-array-premium)
 
 ---
 
@@ -724,6 +727,60 @@ we cut by 2 the computation eachtime
 space = O(logN) 
 ~~~
 the dictionary stores only 'intermediate' results thanks to the halving
+
+## [54. Spiral Matrix](https://leetcode.com/problems/spiral-matrix)
+
+### key idea
+
+we gonna use left, right, top, bottom pointers to mark the boundaries
+
+for each iteration we update those boundaries and make the matrix "smaller"
+
+bullshit
+
+~~~py
+class Solution:
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        l, r = 0, len(matrix[0])
+        t, b = 0, len(matrix)
+        res = []
+
+        while l < r and t < b:
+            # left to right
+            for i in range(l, r):
+                res.append(matrix[t][i])
+            t += 1
+
+            # top to bottom
+            for i in range(t, b):
+                res.append(matrix[i][r - 1])
+            r -= 1
+
+            # check if right went before left or top went after bottom (since we update them above)
+            if not (l < r and t < b):
+                break
+            
+            # right to left
+            for i in range(r - 1, l - 1, -1):
+                res.append(matrix[b - 1][i])
+            b -= 1
+
+            # bottom to top
+            for i in range(b - 1, t - 1, -1):
+                res.append(matrix[i][l])
+            l += 1
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N * M) 
+~~~
+we go through the whole matrix
+
+~~~
+space = O(1) or O(N * M) if we count res
+~~~
 
 ## [56. Merge Intervals](https://leetcode.com/problems/merge-intervals)
 
@@ -3504,3 +3561,40 @@ len(s) = n
 
 prefix_sum and right/left candles are of size n
 
+## 2340. Minimum Adjacent Swaps to Make a Valid Array [(premium)](https://leetcode.com/problems/minimum-adjacent-swaps-to-make-a-valid-array)
+
+### key idea
+
+find the rightmost largest element index and leftmost smallest element index
+
+calculate the swaps by doing a math calculation
+
+there is a small edge case: if the smallest element is at the right of the largest element we need to subtract 1 from the result since one swap is needed by both sides, a small advantage let's say
+
+~~~py
+class Solution:
+    def minimumSwaps(self, nums: List[int]) -> int:
+        max_value_pos = len(nums) - 1
+        min_value_pos = 0
+
+        for i, n in enumerate(nums):
+            if nums[min_value_pos] > n:
+                min_value_pos = i
+            if nums[max_value_pos] <= n: # the = is needed to get the rightmost largest value index
+                max_value_pos = i
+            
+        res = (len(nums) - 1 - max_value_pos) + min_value_pos
+        
+        return res - 1 if min_value_pos > max_value_pos else res
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+in the worst case we go through the whole array
+
+~~~
+space = O(1) 
+~~~
+no extra memory used
