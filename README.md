@@ -30,6 +30,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [snats xeet](https://x.com/snats_xyz/status/1832178008578224551)
 
 # Problems index
+- [3. Longest Substring Without Repeating Characters](#3-longest-substring-without-repeating-characters)
 - [5. Longest Palindromic Substring](#5-longest-palindromic-substring)
 - [7. Reverse Integer](#7-reverse-integer)
 - [14. Longest Common Prefix](#14-longest-common-prefix)
@@ -39,12 +40,15 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [31. Next Permutation](#31-next-permutation)
 - [33. Search in Rotated Sorted Array](#33-search-in-rotated-sorted-array)
 - [34. Find First and Last Position of Element in Sorted Array](#34-find-first-and-last-position-of-element-in-sorted-array)
+- [36. Valid Sudoku]()
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
+- [49. Group Anagrams](#49-group-anagrams)
 - [50. Pow(x,n)](#50-powxn)
 - [54. Spiral Matrix](#54-spiral-matrix)
 - [56. Merge Intervals](#56-merge-intervals)
 - [71. Simplify Path](#71-simplify-path)
 - [88. Merge Sorted Array](#88-merge-sorted-array)
+- [128. Longest Consecutive Sequence](#128-longest-consecutive-sequence)
 - [129. Sum Root to Leaf Numbers](#129-sum-root-to-leaf-numbers)
 - [133. Clone Graph](#133-clone-graph)
 - [138. Copy List with Random Pointer](#138-copy-list-with-random-pointer)
@@ -99,6 +103,44 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [2340. Minimum Adjacent Swaps to Make a Valid Array](#2340-minimum-adjacent-swaps-to-make-a-valid-array-premium)
 
 ---
+
+## [3. Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters)
+
+### key idea
+
+sliding window, store indexes inside a dictionary, as soon as we encounter a character that is in the dictionary we need to check if it's in the range and update the left pointer
+
+~~~py
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        if len(s) <= 1:
+            return len(s)
+            
+        char_dict_idx = defaultdict(int)
+        res = 0
+        l = 0
+
+        for r in range(len(s)):
+            if s[r] in char_dict_idx:
+                if char_dict_idx[s[r]] >= l:
+                    l = char_dict_idx[s[r]] + 1
+
+            res = max(res, r - l + 1)
+            char_dict_idx[s[r]] = r
+        
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(N)
+~~~
+we go through the whole string only once
+
+~~~
+space = O(N)
+~~~
+dictionary size, n size of the string
 
 ## [5. Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring)
 
@@ -545,6 +587,50 @@ space = O(1)
 ~~~
 no extra memory used
 
+## [36. Valid Sudoku](https://leetcode.com/problems/valid-sudoku/description/)
+
+### key idea
+
+use different sets for each row, col and grid
+
+to differentiate the grid, we can assume that each grid is one position, so top left is 0, top center is 1, top right is 2 and so on
+
+with this differentiation we can index inside the grid dictionary simply dividing by 3
+
+~~~py
+class Solution:
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        row_set = defaultdict(set)
+        col_set = defaultdict(set)
+        box_set = defaultdict(set)
+
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                val = board[i][j]
+                if val == ".":
+                    continue
+                    
+                if val in row_set[i] or val in col_set[j] or val in box_set[(i // 3, j // 3)]:
+                    return False
+
+                row_set[i].add(val)
+                col_set[j].add(val)
+                box_set[(i // 3, j // 3)].add(val)
+        
+        return True
+~~~
+
+**complexity**
+~~~
+time = O(N*M) = O(9x9) = O(1)
+~~~
+we go through the whole board in the worst case
+
+~~~
+space = O(9x9)
+~~~
+same as time for the dictionaries
+
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
 ### key idea
@@ -676,6 +762,41 @@ n = how many subsets do we need & 2^n = subset order
 space = O(2^N) 
 ~~~
 2^N = order of subsets
+
+## [49. Group Anagrams](https://leetcode.com/problems/group-anagrams)
+
+### key idea
+
+hashmap that map the count of characters with the relative word that have the same count
+
+we count character using an array that we later transform in a tuple to group the words together
+
+~~~py
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        count_dict = defaultdict(list) # char count -> list of anagrams
+
+        for word in strs:
+            count = [0] * 26
+
+            for c in word:
+                count[ord(c) - ord("a")] += 1
+            
+            count_dict[tuple(count)].append(word)
+        
+        return count_dict.values()
+~~~
+
+**complexity**
+~~~
+time = O(MN) 
+~~~
+for each string we iterate each character
+
+~~~
+space = O(N) 
+~~~
+hashmap size
 
 ## [50. Pow(x,n)](https://leetcode.com/problems/powx-n/description)
 
@@ -912,6 +1033,47 @@ space = O(1)
 ~~~
 we do the operations in place without extra memory
 
+## [128. Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/description/)
+
+### key idea
+
+we need to careful decide where to start searching the sequence
+
+the right starting point is a number without any preceding number
+
+for example: [100,4,200,1,3,2] the starting point would be 1 and from 1 we iterate on the right to search for its consecutives (based on a set, to remove duplicates)
+
+~~~py
+class Solution:
+    def longestConsecutive(self, nums: List[int]) -> int:
+        nums_set = set(nums)
+        max_streak = 0
+
+        for n in nums:
+            if n - 1 not in nums_set:
+                cur = n
+                cur_streak = 1
+
+                while cur + 1 in nums_set:
+                    cur_streak += 1
+                    cur += 1
+
+                max_streak = max(max_streak, cur_streak)
+        
+        return max_streak
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+set creation and iteration through the whole array nums
+
+~~~
+space = O(N) 
+~~~
+set memory
+
 ## [129. Sum Root to Leaf Numbers](https://leetcode.com/problems/sum-root-to-leaf-numbers)
 
 ### key idea
@@ -1071,7 +1233,7 @@ class LRUCache:
         self.left, self.right = Node(0,0), Node(0,0)
         self.left.next, self.right.prev = self.right, self.left
     
-    # insert to right (MRU, Most Recently Used)
+    # insrt to right (MRU, Most Recently Used)
     def insert(self, node):
         prev, nxt = self.right.prev, self.right
         prev.next = node
@@ -1532,28 +1694,19 @@ the solution above could be simplified by 'merging' together the prefix and suff
 
 ~~~py
 class Solution:
-    # example: [1, 2, 3, 4]
     def productExceptSelf(self, nums: List[int]) -> List[int]:
         res = [1] * len(nums)
 
         prefix = 1
         for i in range(len(nums)):
             res[i] = prefix
-            prefix = prefix * nums[i]
-
-        # print(res) -> [1, 1, 2, 6]
-
+            prefix *= nums[i]
+        
         suffix = 1
         for i in range(len(nums) - 1, -1, -1):
-            # [6 * 1, 2 * 4, 1 * 12, 1 * 24] in reverse since
-            #    the loop is decrementing
-            res[i] = res[i] * suffix
-
-            # 1 -> 4 -> 12 -> 24 -> 24
-            suffix = suffix * nums[i]
-
-        # print(res) -> [24, 12, 8, 6] 
-
+            res[i] *= suffix
+            suffix *= nums[i]
+        
         return res
 ~~~
 
