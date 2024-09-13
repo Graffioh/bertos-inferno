@@ -40,7 +40,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [31. Next Permutation](#31-next-permutation)
 - [33. Search in Rotated Sorted Array](#33-search-in-rotated-sorted-array)
 - [34. Find First and Last Position of Element in Sorted Array](#34-find-first-and-last-position-of-element-in-sorted-array)
-- [36. Valid Sudoku]()
+- [36. Valid Sudoku](#36-valid-sudoku)
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [49. Group Anagrams](#49-group-anagrams)
 - [50. Pow(x,n)](#50-powxn)
@@ -52,6 +52,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [129. Sum Root to Leaf Numbers](#129-sum-root-to-leaf-numbers)
 - [133. Clone Graph](#133-clone-graph)
 - [138. Copy List with Random Pointer](#138-copy-list-with-random-pointer)
+- [143. Reorder List](#143-reorder-list)
 - [146. LRU Cache](#146-lru-cache)
 - [162. Find Peak Element](#162-find-peak-element)
 - [199. Binary Tree Right Side View](#199-binary-tree-right-side-view)
@@ -74,6 +75,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [528. Random Pick with Weight](#528-random-pick-with-weight)
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
 - [560. Subarray Sum Equals K](#560-subarray-sum-equals-k)
+- [567. Permutation in String](#567-permutation-in-string)
 - [636. Exclusive Time of Functions](#636-exclusive-time-of-functions)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [647. Palindromic Substrings](#647-palindromic-substrings)
@@ -108,7 +110,11 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 
 ### key idea
 
-sliding window, store indexes inside a dictionary, as soon as we encounter a character that is in the dictionary we need to check if it's in the range and update the left pointer
+sliding window
+
+store indexes inside a dictionary
+
+as soon as we encounter a character that is in the dictionary we need to check if it's in the range and update the left pointer
 
 ~~~py
 class Solution:
@@ -116,17 +122,17 @@ class Solution:
         if len(s) <= 1:
             return len(s)
             
-        char_dict_idx = defaultdict(int)
+        pos_dict = defaultdict(int)
         res = 0
         l = 0
 
         for r in range(len(s)):
-            if s[r] in char_dict_idx:
-                if char_dict_idx[s[r]] >= l:
-                    l = char_dict_idx[s[r]] + 1
+            if s[r] in pos_dict:
+                if pos_dict_[s[r]] >= l:
+                    l = pos_dict[s[r]] + 1
 
             res = max(res, r - l + 1)
-            char_dict_idx[s[r]] = r
+            pos_dict[s[r]] = r
         
         return res
 ~~~
@@ -1202,6 +1208,51 @@ space = O(1)
 ~~~
 no extra space used thanks to interleaving nodes
 
+## [143. Reorder List](https://leetcode.com/problems/reorder-list/)
+
+### key idea
+
+split the list in two (by using slow and fast pointers)
+
+reverse the second part
+
+merge the two parts together
+
+~~~py
+class Solution:
+    def reorderList(self, head: Optional[ListNode]) -> None:
+        slow = head
+        fast = head.next
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        
+        second_part = slow.next
+        prev = slow.next = None
+        while second_part:
+            tmp = second_part.next
+            second_part.next = prev
+            prev = second_part
+            second_part = tmp
+        
+        first_part, second_part = head, prev
+        while second_part:
+            tmp1, tmp2 = first_part.next, second_part.next
+            first_part.next = second_part
+            second_part.next = tmp1
+            first_part, second_part = tmp1, tmp2
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we go through the whole list
+
+~~~
+space = O(1) 
+~~~
+no extra space needed
 
 ## [146. LRU Cache](https://leetcode.com/problems/lru-cache/description)
 
@@ -2430,6 +2481,58 @@ we iterate the whole array nums
 space = O(N) 
 ~~~
 for the hashmap
+
+## [567. Permutation in String](https://leetcode.com/problems/permutation-in-string/)
+
+### key idea
+
+basically use two hashmap that will be compared to see if the permutation is present or not
+
+sliding window to search for the permutation
+
+if we go out of the window bounds, we need to update the window hashmap accordingly
+
+~~~py
+class Solution:
+    def checkInclusion(self, s1: str, s2: str) -> bool:
+        s1_fixed_dict = Counter(s1)
+        s2_window_dict = defaultdict(int) 
+        l = 0
+
+        if len(s1) > len(s2):
+            return False
+
+        for r in range(len(s2)):
+            s2_window_dict[s2[r]] += 1
+
+            if r - l + 1 > len(s1):
+                # update the dictionary since we'll be moving the window up by 1
+                if s2_window_dict[s2[l]] > 1:
+                    s2_window_dict[s2[l]] -= 1
+                else:
+                    del s2_window_dict[s2[l]]
+
+                # move the window up by 1
+                l += 1
+
+            if s1_fixed_dict == s2_window_dict:
+                return True
+
+        return False
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+iteration through the whole s2
+
+~~~
+space = O(26N) 
+~~~
+n is the size of both strings and 26 is the size of s1 in the worst case (the whole alphabet)
+
+s2 hashmap will have the same size as s1 hashmap
 
 ## [636. Exclusive Time of Functions](https://leetcode.com/problems/exclusive-time-of-functions)
 
