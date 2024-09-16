@@ -41,6 +41,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [33. Search in Rotated Sorted Array](#33-search-in-rotated-sorted-array)
 - [34. Find First and Last Position of Element in Sorted Array](#34-find-first-and-last-position-of-element-in-sorted-array)
 - [36. Valid Sudoku](#36-valid-sudoku)
+- [39. Combination Sum](#39-combination-sum)
 - [46. Permutations | 77. Combinations | 78. Subsets](#46-permutations--77-combinations--78-subsets)
 - [49. Group Anagrams](#49-group-anagrams)
 - [50. Pow(x,n)](#50-powxn)
@@ -60,8 +61,10 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [210. Course Schedule II](#210-course-schedule-ii)
 - [215. Kth Largest Element in an Array](#215-kth-largest-element-in-an-array)
 - [227. Basic Calculator II](#227-basic-calculator-ii)
+- [230. Kth Smallest Element in a BST](#230-kth-smallest-element-in-a-bst)
 - [236. Lowest Common Ancestor of a Binary Tree](#236-lowest-common-ancestor-of-a-binary-tree)
 - [238. Product of Array Except Self](#238-product-of-array-except-self)
+- [287. Find the Duplicate Number](#287-find-the-duplicate-number)
 - [314. Binary Tree Vertical Order Traversal](#314-binary-tree-vertical-order-traversal-premium--premium)
 - [339. Nested List Weight Sum](#339-nested-list-weight-sum-premium)
 - [346. Moving Average from Data Stream](#346-moving-average-from-data-stream-premium--premium) 
@@ -637,6 +640,51 @@ space = O(9x9)
 ~~~
 same as time for the dictionaries
 
+## [39. Combination Sum](https://leetcode.com/problems/combination-sum/)
+
+### key idea
+
+since it's a combination, you can't have duplicates tuples (but you can have the same number repeated infinite times in the tuple)
+
+now to solve the problem just iterate through all the numbers in candidates, by picking the candidate or skipping the candidate
+
+remember that you can pick multiple identical values, so first do the recursive call for the same number, then for the next number
+
+~~~py
+class Solution:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        res = []
+
+        def gen_comb(i, combination, total):
+            if total == target:
+                res.append(combination[:])
+                return
+
+            if i == len(candidates) or total > target:
+                return
+            
+            combination.append(candidates[i])
+            gen_comb(i, combination, total + candidates[i])
+            combination.pop()
+            gen_comb(i + 1, combination, total)
+        
+        gen_comb(0, [], 0)
+
+        return res
+~~~
+
+**complexity**
+~~~
+time = O(2^T)
+~~~
+
+2^t is the height of the recursive tree, where t is the target value
+
+~~~
+space = O(N)
+~~~
+recursive call stack space
+
 ## [46. Permutations](https://leetcode.com/problems/permutations/description/) | [77. Combinations](https://leetcode.com/problems/combinations/description/) | [78. Subsets](https://leetcode.com/problems/subsets/description/)
 
 ### key idea
@@ -1111,6 +1159,58 @@ we go through the whole tree
 ~~~
 space = O(1) or O(height) if recursive stack is counted
 ~~~
+
+## [131. Palindrome Partitioning]()
+
+### key idea
+
+since we need to generate substrings, it's a backtracking problem
+
+the possible choices are substrings of the input string
+
+to do backtracking on these strings, it's necessary an iteration from start to end, so each time we eliminate one choice from the possible choices
+
+check if the substring is palindrome and that's it
+
+~~~py
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        res = []
+        pali = []
+
+        def gen_pali(i):
+            if i == len(s):
+                res.append(pali[:])
+                return
+            
+            for j in range(i, len(s)):
+                if self.is_pali(s, i, j):
+                    pali.append(s[i:j+1])
+                    gen_pali(j + 1)
+                    pali.pop()
+        
+        gen_pali(0)
+        return res
+    
+    def is_pali(self, s, l, r):
+        while l < r:
+            if s[l] != s[r]:
+                return False
+            l += 1
+            r -= 1
+        return True
+~~~
+
+**complexity**
+~~~
+time = O(N * 2^N) 
+~~~
+we are generating subsets for each character of the string
+
+~~~
+space = O(N)
+~~~
+recursive stack size in the worst case
 
 ## [133. Clone Graph](https://leetcode.com/problems/clone-graph)
 
@@ -1662,6 +1762,46 @@ space = O(1)
 ~~~
 no extra space, we happy
 
+## [230. Kth Smallest Element in a BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/)
+
+### key idea
+
+inorder traversal
+
+if you do the recursive approach, it works but it's not the most optimal
+
+the most optimal one (not for every case tho) is the iterative approach where we use a stack to simulate the recursive calls and as soon as we find the kth element we stop
+
+~~~py
+class Solution:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        stk = []
+
+        while True:
+            while root:
+                stk.append(root)
+                root = root.left
+
+            k -= 1
+            root = stk.pop()
+            if k == 0:
+                return root.val
+            
+            root = root.right
+        return -1
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+in the worst case the iterative approach act as the recursive one (imagine k == number of nodes in the tree
+
+~~~
+space = O(N) 
+~~~
+we use a stack 
+
 ## [236. Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description)
 
 ### key idea
@@ -1775,6 +1915,48 @@ since there are no auxiliary arrays except the result array
 ### useful resources
 
 [prefix sum video by errichto](https://www.youtube.com/watch?v=bNvIQI2wAjk)
+
+## [287. Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number)
+
+### key idea
+
+treat this as a linked list pointer and use floyd cycle detection
+
+steps:
+
+- find the intersection using slow and fast pointers
+- create a new slow pointer, increment the old slow pointer and the new one by 1 each time
+- the intersection between them is the result
+
+~~~py
+class Solution:
+    def findDuplicate(self, nums: List[int]) -> int:
+        slow = fast = nums[0]
+
+        while slow < len(nums):
+            slow = nums[slow]
+            fast = nums[nums[fast]]
+            if slow == fast:
+                break
+        
+        slow2 = nums[0]
+        while slow != slow2:
+            slow = nums[slow]
+            slow2 = nums[slow2]
+        
+        return slow
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we basically go through the array only once each time
+
+~~~
+space = O(1) 
+~~~
+no extra space used
 
 ## 314. Binary Tree Vertical Order Traversal [(premium)](https://leetcode.com/problems/binary-tree-vertical-order-traversal/description) | [('premium')](https://www.lintcode.com/problem/651/)
 
