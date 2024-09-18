@@ -51,6 +51,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [88. Merge Sorted Array](#88-merge-sorted-array)
 - [128. Longest Consecutive Sequence](#128-longest-consecutive-sequence)
 - [129. Sum Root to Leaf Numbers](#129-sum-root-to-leaf-numbers)
+- [131. Palindrome Partitioning](#131-palindrome-partitioning)
 - [133. Clone Graph](#133-clone-graph)
 - [138. Copy List with Random Pointer](#138-copy-list-with-random-pointer)
 - [143. Reorder List](#143-reorder-list)
@@ -79,6 +80,7 @@ i try solving the question for 30 minutes, then look at the solution until i ful
 - [543. Diameter of Binary Tree](#543-diameter-of-binary-tree)
 - [560. Subarray Sum Equals K](#560-subarray-sum-equals-k)
 - [567. Permutation in String](#567-permutation-in-string)
+- [621. Task Scheduler](#621-task-scheduler)
 - [636. Exclusive Time of Functions](#636-exclusive-time-of-functions)
 - [637. Valid Word Abbreviation](#637-valid-word-abbreviation-premium--premium)
 - [647. Palindromic Substrings](#647-palindromic-substrings)
@@ -1160,7 +1162,66 @@ we go through the whole tree
 space = O(1) or O(height) if recursive stack is counted
 ~~~
 
-## [131. Palindrome Partitioning]()
+## [130. Surrounded Regions]()
+
+### key idea
+
+here we apply a 'reverse thinking': instead of looking only for "O", we will look for the "O" except "T"
+
+what is "T"? we will mark with "T" the regions that includes an "O" at the edge
+
+after the mark we will mark everything that is an "O" and not a "T" with an "X"
+
+at the end we will revert the "T" to "O"
+
+and the job is done!
+
+~~~py
+class Solution:
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        def dfs(i, j):
+            if i < 0 or j < 0 or i >= len(board) or j >= len(board[0]) or board[i][j] != "O":
+                return
+            
+            board[i][j] = "T"
+            dfs(i+1, j)
+            dfs(i-1, j)
+            dfs(i, j+1)
+            dfs(i, j-1)
+
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == "O" and (i in [0, len(board) - 1] or j in [0, len(board[0]) - 1]):
+                    dfs(i, j)
+
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == "O":
+                    board[i][j] = "X"
+        
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == "T":
+                    board[i][j] = "O"
+        
+        return board
+~~~
+
+**complexity**
+~~~
+time = O(NM) 
+~~~
+we go through the whole grid multiple times
+
+~~~
+space = O(1) or O(NM) if we count the recursion stack space
+~~~
+
+
+## [131. Palindrome Partitioning](https://leetcode.com/problems/palindrome-partitioning)
 
 ### key idea
 
@@ -2715,6 +2776,54 @@ space = O(26N)
 n is the size of both strings and 26 is the size of s1 in the worst case (the whole alphabet)
 
 s2 hashmap will have the same size as s1 hashmap
+
+## [621. Task Scheduler](https://leetcode.com/problems/task-scheduler/)
+
+### key idea
+
+track the time elapsed (increment time by 1)
+
+each time pick the most frequent character (max heap)
+
+to manage the idle time, put the character frequency with its time in a queue
+
+as soon as the elapsed time is equal to the time in the queue, it needs to be popped
+
+the time elapsed is the result
+
+~~~py
+class Solution:
+    def leastInterval(self, tasks: List[str], n: int) -> int:
+        freq_counter = Counter(tasks)
+        max_heap = [(-freq) for _, freq in freq_counter.items()]
+        q = deque()
+        heapify(max_heap)
+
+        time = 0
+        while max_heap or q:
+            time += 1
+
+            if max_heap:
+                freq = 1 + heappop(max_heap)
+                if freq:
+                    q.append((freq, time + n))
+            
+            if q and q[0][1] == time:
+                heappush(max_heap, q.popleft()[0])
+
+        return time
+~~~
+
+**complexity**
+~~~
+time = O(N) 
+~~~
+we iterate through the tasks (we don't care about heap operations since it's log26 = 1)
+
+~~~
+space = O(N) 
+~~~
+we store at max all the tasks frequencies
 
 ## [636. Exclusive Time of Functions](https://leetcode.com/problems/exclusive-time-of-functions)
 
